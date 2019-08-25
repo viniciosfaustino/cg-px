@@ -46,4 +46,28 @@ SceneObject::setParent(SceneObject* parent)
   // TODO
 }
 
+  inline void cg::SceneObject::removeChild(SceneObject* child)
+  {
+
+    std::vector<Reference<SceneObject>>::iterator ptr;
+    bool found = false;
+    ptr = children.begin();
+    while (!found)
+    {
+      if (ptr->get() == child) 
+      {
+        found = true;
+        int pos = ptr - children.begin();
+        children.erase(children.begin(), children.begin() + pos);
+      }
+      ptr++;      
+    }    
+  }
+
+  inline void SceneObject::addChild(SceneObject* child)
+{
+    children.push_back(child);
+    child->setParent(this);
+}
+
 } // end namespace cg

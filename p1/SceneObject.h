@@ -35,6 +35,7 @@
 
 #include "SceneNode.h"
 #include "Transform.h"
+#include <vector>
 
 namespace cg
 { // begin namespace cg
@@ -85,9 +86,16 @@ public:
 private:
   Scene* _scene;
   SceneObject* _parent;
+  std::vector  <Reference<SceneObject>>  children;
   Transform _transform;
 
   friend class Scene;
+
+inline void
+  removeChild(SceneObject*);
+
+inline void
+  addChild(SceneObject*);
 
 }; // SceneObject
 

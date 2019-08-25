@@ -46,6 +46,10 @@ namespace cg
 // =====
 class Scene: public SceneNode
 {
+private:
+  SceneObject* rootSceneObject;
+
+
 public:
   Color backgroundColor{Color::gray};
 
@@ -53,9 +57,11 @@ public:
   Scene(const char* name):
     SceneNode{name}
   {
+    rootSceneObject = new SceneObject{ "root", this };
+    rootSceneObject->visible = FALSE;
     // do nothing
   }
-
+  
 }; // Scene
 
 } // end namespace cg
