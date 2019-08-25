@@ -82,6 +82,10 @@ public:
   {
     return &_transform;
   }
+  void removeChild(SceneObject* child);
+
+  void addChild(SceneObject* child);
+
 
 private:
   Scene* _scene;
@@ -90,12 +94,6 @@ private:
   Transform _transform;
 
   friend class Scene;
-
-inline void
-  removeChild(SceneObject*);
-
-inline void
-  addChild(SceneObject*);
 
 }; // SceneObject
 

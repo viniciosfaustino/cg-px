@@ -47,7 +47,7 @@ namespace cg
 class Scene: public SceneNode
 {
 private:
-  SceneObject* rootSceneObject;
+  SceneObject* _root;
 
 
 public:
@@ -57,9 +57,14 @@ public:
   Scene(const char* name):
     SceneNode{name}
   {
-    rootSceneObject = new SceneObject{ "root", this };
-    rootSceneObject->visible = FALSE;
+    _root = new SceneObject{ "root", this };
+    _root->visible = FALSE;
     // do nothing
+  }
+
+  auto root()
+  {
+    return _root;
   }
   
 }; // Scene

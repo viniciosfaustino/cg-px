@@ -1,4 +1,5 @@
 #include "P1.h"
+#include "SceneObject.h"
 
 namespace cg
 { // begin namespace cg
@@ -64,9 +65,15 @@ makeBoxMesh()
 inline void
 P1::buildScene()
 {
-  _current = _scene = new Scene{"Scene 1"};
+  _current = _scene = new Scene{ "Scene 1" };
+  _box2 = new SceneObject{ "Box 2", _scene };
   _box = new SceneObject{"Box 1", _scene};
+  _box3 = new SceneObject{ "Box 3", _scene };
+  _box->setParent(_scene->root());
+  _box->addChild(_box2);  
+  _box->removeChild(_box2);
   _primitive = makeBoxMesh();
+  
 }
 
 void
