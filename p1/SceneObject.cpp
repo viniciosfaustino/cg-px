@@ -64,7 +64,7 @@ namespace cg
   }
 
   void
-    SceneObject::setParent(SceneObject* parent)
+    SceneObject::setParent(Reference<SceneObject> parent)
   {
     if (_parent != nullptr)
     {
@@ -87,7 +87,7 @@ namespace cg
     
   }
 
-  void SceneObject::removeChild(SceneObject* child)
+  void SceneObject::removeChild(Reference<SceneObject> child)
   {
     auto it = this->getIterator();
     auto it_end = this->getEnd();
@@ -119,7 +119,7 @@ namespace cg
   }
 
 
-  void SceneObject::addChild(SceneObject* child)
+  void SceneObject::addChild(Reference<SceneObject> child)
 {
     child->_parent = this;
     children.push_back(child);

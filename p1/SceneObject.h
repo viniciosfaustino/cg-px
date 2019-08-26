@@ -76,17 +76,17 @@ public:
   }
 
   /// Sets the parent of this scene object.
-  void setParent(SceneObject* parent);
+  void setParent(Reference<SceneObject> parent);
 
   /// Returns the transform of this scene object.
   auto transform()
   {
     return &_transform;
   }
-  void removeChild(SceneObject* child);
+  void removeChild(Reference<SceneObject> child);
   void removeComponent(Component* component);
 
-  void addChild(SceneObject* child);
+  void addChild(Reference<SceneObject> child);
   void addComponent(Component* component);
 
   auto getIterator();

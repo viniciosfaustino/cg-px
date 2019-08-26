@@ -1,4 +1,5 @@
 #include "P1.h"
+#include <string>
 #include "SceneObject.h"
 
 namespace cg
@@ -66,17 +67,36 @@ inline void
 P1::buildScene()
 {
   _current = _scene = new Scene{ "Scene 1" };
-  _box = new SceneObject{ "Box 1", _scene };
-  Reference<SceneObject> _box2 = new SceneObject{ "Box 2", _scene }; 
-  Reference<SceneObject> _box3 = new SceneObject{ "Box 3", _scene };
-  Reference<Component> _comp1 = new Transform;
-  _scene->root()->addChild(_box);
+  //_box = new SceneObject{ "Box 1", _scene };
+  //Reference<SceneObject> _box2 = new SceneObject{ "Box 2", _scene }; 
+  //Reference<SceneObject> _box3 = new SceneObject{ "Box 3", _scene };
+  //Reference<Component> _comp1 = new Transform;
+  int rootLevel = 3;
+  int subLevel = 2;
+  int index = 0;
+  for (int i = 0; i< rootLevel; i++)
+  {
+    index++;
+    std::string name = "Box" ;    
+    auto rootSceneObject = new SceneObject{ (name+std::to_string(index)).c_str(), _scene };
+    _scene->root()->addChild(rootSceneObject);
+    rootSceneObject->addComponent(new Transform{});
+    for (int j = 0; j < subLevel; j++)
+    {
+      index++;
+      auto subSceneObject = new SceneObject{ (name + std::to_string(index)).c_str(), _scene };
+      rootSceneObject->addChild(subSceneObject);
+      subSceneObject->addComponent(new Transform{});
+    }
+  }
+
+  //_scene->root()->addChild(_box);
   //_box->setParent(_scene->root());
-  _box->addChild(_box2);
-  _box->addComponent(_comp1);
-  _box->removeComponent(_comp1);
-  _box2->addChild(_box3);
-  _box2->setParent(nullptr);
+  //_box->addChild(_box2);
+  //_box->addComponent(_comp1);
+  //_box->removeComponent(_comp1);
+  //_box2->addChild(_box3);
+  //_box2->setParent(nullptr);
   //_box2->setParent(_box3);
   _primitive = makeBoxMesh();
   
