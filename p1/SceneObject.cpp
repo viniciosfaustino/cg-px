@@ -53,6 +53,16 @@ namespace cg
     return this->children.end();
   }
 
+  auto SceneObject::getComponentsIterator()
+  {
+    return this->components.begin();
+  }
+
+  auto SceneObject::getComponentsEnd()
+  {
+    return this->components.end();
+  }
+
   void
     SceneObject::setParent(SceneObject* parent)
   {
@@ -95,6 +105,19 @@ namespace cg
       }      
     }    
   }
+
+  void SceneObject::addComponent(Component* component)
+  {
+    components.push_back(component);
+  }
+
+  void SceneObject::removeComponent(Component* component)
+  {
+    auto it = this->getComponentsIterator();
+    components.erase(it);
+
+  }
+
 
   void SceneObject::addChild(SceneObject* child)
 {

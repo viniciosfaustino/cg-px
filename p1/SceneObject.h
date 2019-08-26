@@ -84,17 +84,24 @@ public:
     return &_transform;
   }
   void removeChild(SceneObject* child);
+  void removeComponent(Component* component);
 
   void addChild(SceneObject* child);
+  void addComponent(Component* component);
 
   auto getIterator();
 
   auto getEnd();
 
+  auto getComponentsIterator();
+
+  auto getComponentsEnd();
+
 private:
   Scene* _scene;
   SceneObject* _parent;
   std::vector  <Reference<SceneObject>>  children;
+  /*big*/ std::vector  <Reference<Component>>  components;
   Transform _transform;
 
   friend class Scene;

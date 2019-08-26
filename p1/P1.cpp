@@ -69,9 +69,12 @@ P1::buildScene()
   _box = new SceneObject{ "Box 1", _scene };
   Reference<SceneObject> _box2 = new SceneObject{ "Box 2", _scene }; 
   Reference<SceneObject> _box3 = new SceneObject{ "Box 3", _scene };
+  Reference<Component> _comp1 = new Transform;
   _scene->root()->addChild(_box);
   //_box->setParent(_scene->root());
-  _box->addChild(_box2);  
+  _box->addChild(_box2);
+  _box->addComponent(_comp1);
+  _box->removeComponent(_comp1);
   _box2->addChild(_box3);
   _box2->setParent(nullptr);
   //_box2->setParent(_box3);
