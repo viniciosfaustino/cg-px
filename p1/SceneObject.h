@@ -36,6 +36,7 @@
 #include "SceneNode.h"
 #include "Transform.h"
 #include <vector>
+#include <iterator>
 
 namespace cg
 { // begin namespace cg
@@ -86,6 +87,9 @@ public:
 
   void addChild(SceneObject* child);
 
+  auto getIterator();
+
+  auto getEnd();
 
 private:
   Scene* _scene;

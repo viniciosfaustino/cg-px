@@ -31,6 +31,7 @@
 // Last revision: 25/08/2018
 
 #include "SceneObject.h"
+#include "Scene.h"
 #include <iostream>
 
 namespace cg
@@ -41,49 +42,64 @@ namespace cg
 //
 // SceneObject implementation
 // ===========
+
+  auto SceneObject::getIterator()
+  {
+    return this->children.begin();
+  }
+
+  auto SceneObject::getEnd()
+  {
+    return this->children.end();
+  }
+
   void
     SceneObject::setParent(SceneObject* parent)
   {
     if (_parent != nullptr)
     {
       _parent->removeChild(this);
+      if (parent != nullptr)
+      {
+        parent->children.push_back(this);
+      }
     }
 
     if (parent == nullptr)
-    {
-      _parent = this->scene->root();
-      this->scene->root()->addChild(this);
+    {      
+      _parent = this->scene()->root();
+      _parent->children.push_back(this);
     }
     else
     {      
-      parent->addChild(this);
-      _parent = parent;
+      _parent = parent;      
     }
     
   }
 
   void SceneObject::removeChild(SceneObject* child)
   {
-
-    std::vector<Reference<SceneObject>>::iterator ptr;
+    auto it = this->getIterator();
+    auto it_end = this->getEnd();
     bool found = false;
-    ptr = children.begin();
-    while (!found)
+    while (!found && it != it_end)
     {
-      if (ptr->get() == child) 
+      if (it->get() == child) 
       {
         found = true;        
-        children.erase(ptr);        
+        this->children.erase(it);
       }
-      ptr++;      
-    }
+      else
+      {
+        it++;
+      }      
+    }    
   }
 
   void SceneObject::addChild(SceneObject* child)
 {
-    child->setParent(this);
+    child->_parent = this;
     children.push_back(child);
-   
 }
 
 } // end namespace cg

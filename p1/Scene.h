@@ -58,7 +58,7 @@ public:
     SceneNode{name}
   {
     _root = new SceneObject{ "root", this };
-    _root->visible = FALSE;
+    _root->visible = false;
     // do nothing
   }
 
