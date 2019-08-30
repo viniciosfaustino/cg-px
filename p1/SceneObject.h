@@ -56,11 +56,15 @@ public:
 
 
   /// Constructs an empty scene object.
-  SceneObject(const char* name, Scene* scene):
-    SceneNode{name},
-    _scene{scene},
+  SceneObject(const char* name, Scene* scene) :
+    SceneNode{ name },
+    _scene{ scene },
     _parent{}
-  {
+  {    
+    //auto _trans = new Transform{};
+    
+    addComponent(&_transform);
+
     makeUse(&_transform);
   }
 
@@ -76,7 +80,7 @@ public:
     return _parent;
   }
 
-  size_t get_size()
+  size_t childrenSize()
   {
 
 	  return this->_children.size();
@@ -101,20 +105,26 @@ public:
 	  return this->_children.begin();
   }
 
-  auto getEnd()
+  auto getIteratorEnd()
   {
 	  return this->_children.end();
   }
 
-  auto getComponentsIterator();
+  auto getComponentsIterator()
+  {
+    return this->_components.begin();
+  }
 
-  auto getComponentsEnd();
+  auto getComponentsEnd()
+  {
+    return this->_components.end();
+  }
 
 private:
   Scene* _scene;
   SceneObject* _parent;
   std::vector  <Reference<SceneObject>>  _children;
-  /*big*/ std::vector  <Reference<Component>>  _components;
+  std::vector  <Reference<Component>> _components;
   Transform _transform;
 
   friend class Scene;

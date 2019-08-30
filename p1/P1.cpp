@@ -66,40 +66,15 @@ makeBoxMesh()
 inline void
 P1::buildScene()
 {
-  _current = _scene = new Scene{ "Scene 1" };
-  _box = new SceneObject{ "Box 1", _scene };
-  _box2 = new SceneObject{ "Box 2", _scene }; 
-  //Reference<SceneObject> _box3 = new SceneObject{ "Box 3", _scene };
-  //Reference<Component> _comp1 = new Transform;
+  int boxCounter = 0;
+  _current = _scene = new Scene{ "Scene 1" };  
+  _box = new SceneObject{ "Box1", _scene };
   int rootLevel = 3;
-  int subLevel = 2;
-  int index = 0;
+  int subLevel = 2;  
   for (int i = 0; i< rootLevel; i++)
-  {
-    index++;
-    std::string name = "Box" ;    
-    auto rootSceneObject = new SceneObject{ (name+std::to_string(index)).c_str(), _scene };
-    _scene->root()->addChild(rootSceneObject);
-    rootSceneObject->addComponent(new Transform{});
-    for (int j = 0; j < subLevel; j++)
-    {
-      index++;
-      auto subSceneObject = new SceneObject{ (name + std::to_string(index)).c_str(), _scene };
-      rootSceneObject->addChild(subSceneObject);
-      subSceneObject->addComponent(new Transform{});
-    }
+  {    
+    createNewObject(false);  
   }
-
-  //_scene->root()->addChild(_box);
-  //_box->setParent(_scene->root());
-  //_box->addChild(_box2);
-  //_box->addComponent(_comp1);
-  //_box->removeComponent(_comp1);
-  //_box2->addChild(_box3);
-  //_box2->setParent(nullptr);
-  //_box2->setParent(_box3);
-  _primitive = makeBoxMesh();
-  
 }
 
 void
@@ -120,17 +95,17 @@ namespace ImGui
   void ShowDemoWindow(bool*);
 }
 
-void P1::recursionTree(ImGuiTreeNodeFlags flag, bool open, Reference<SceneObject> object)
+void P1::recursionTree(bool open, Reference<SceneObject> object)
 {
 	if (open)
 	{
 		auto it = object->getIterator();
-		auto list_end = object->getEnd();
-		for (; it != list_end; it++)
+		auto vecEnd = object->getIteratorEnd();
+		for (; it != vecEnd; it++)
 		{
-			if ((*it)->get_size() != 0)
+			if ((*it)->childrenSize() != 0)
 			{
-				flag |= ImGuiTreeNodeFlags_OpenOnArrow; //flag pra saber que tem filhos
+				auto flag = ImGuiTreeNodeFlags_OpenOnArrow; //flag pra saber que tem filhos
 				open = ImGui::TreeNodeEx((*it),
 					_current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
 					(*it)->name());
@@ -138,11 +113,11 @@ void P1::recursionTree(ImGuiTreeNodeFlags flag, bool open, Reference<SceneObject
 				if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
 					_current = (*it); //todos que estão em current recebem a seleção
 
-				recursionTree(flag, open, (*it));
+				recursionTree(open, (*it));
 			}
 			else /*Não tem filhos*/
 			{
-				flag |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+				auto flag = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 				open = ImGui::TreeNodeEx((*it),
 					_current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
@@ -160,19 +135,58 @@ void P1::recursionTree(ImGuiTreeNodeFlags flag, bool open, Reference<SceneObject
 }
 
 inline void
+P1::createNewObject(bool empty)
+{
+  static int boxCounter = 10;
+  static int objectCounter = 0;
+  Reference<SceneObject> parent;
+  std::string name;  
+
+  if (_current == _scene)
+  {
+    parent = dynamic_cast<SceneObject*>((SceneObject*)_scene->root());
+  }
+  else
+  {
+    parent = dynamic_cast<SceneObject*>(_current);
+  }
+  
+  name = (empty) ? "Object " + std::to_string(objectCounter) : "Box " + std::to_string(boxCounter);
+  
+  auto child = new SceneObject{ name.c_str(), _scene };
+  if (!empty)
+  {
+    auto p1 = makeBoxMesh();
+    child->addComponent(p1);
+    _scene->addScenePrimitive(p1);
+    boxCounter++;
+  }
+  else
+  {
+    objectCounter++;
+  }
+
+  parent->addChild(child);  
+}
+
+inline void
 P1::hierarchyWindow()
 {
+  static int boxCounter = 8;
   ImGui::Begin("Hierarchy");
   if (ImGui::Button("Create###object"))
     ImGui::OpenPopup("CreateObjectPopup");
   if (ImGui::BeginPopup("CreateObjectPopup"))
-  {
-    ImGui::MenuItem("Empty Object");
+  {    
+    if (ImGui::MenuItem("Empty Object"))
+    {
+      createNewObject(true);
+    }
     if (ImGui::BeginMenu("3D Object"))
     {
       if (ImGui::MenuItem("Box"))
-      {
-		// TODO: create a new box.
+      {		  
+        createNewObject(false);        
       }
       ImGui::EndMenu();
     }
@@ -188,7 +202,7 @@ P1::hierarchyWindow()
   if (ImGui::IsItemClicked())
     _current = _scene;
 
-  recursionTree(flag, open, _scene->root());
+  recursionTree(open, _scene->root());
 
   ImGui::End();
 	//chamar função recursiva que popa os object scenes na tela
@@ -258,24 +272,54 @@ P1::sceneGui()
 }
 
 inline void
+P1::showTransform(Reference<Transform> component)
+{
+  if (ImGui::CollapsingHeader(component->typeName()))
+  {
+    //auto t = object->transform();
+
+    ImGui::TransformEdit(component);
+    _transform = component->localToWorldMatrix();
+  }
+}
+inline void
+P1::showPrimitive(Reference<Primitive> component)
+{
+  if (ImGui::CollapsingHeader(component->typeName()))
+  {
+    //auto t = object->transform();
+
+    ImGui::Text((std::string{"Quantidade de Vertices: "}+std::to_string(component->mesh()->vertexCount())).c_str());
+
+  }
+    
+}
+
+inline void
 P1::sceneObjectGui()
 {
   auto object = (SceneObject*)_current;
 
   ImGui::ObjectNameInput(object);
   ImGui::SameLine();
-  ImGui::Checkbox("###visible", &object->visible);
+  ImGui::Checkbox("visible", &object->visible);
   ImGui::Separator();
-  if (ImGui::CollapsingHeader(object->transform()->typeName()))
+  
+   //ver se tem primitivo, e se tiver mostrar
+  auto it = object->getComponentsIterator();
+  auto compEnd = object->getComponentsEnd();
+  for (; it != compEnd; it++)
   {
-    auto t = object->transform();
-
-    ImGui::TransformEdit(t);
-    _transform = t->localToWorldMatrix();
-  }
-  if (ImGui::CollapsingHeader(_primitive->typeName()))
-  {
-    // TODO: show primitive properties.
+    auto component = dynamic_cast<Transform*>((Component*)(*it));
+    if (component != nullptr) 
+    {
+      showTransform(component);
+    }
+    else
+    {
+      auto prim = dynamic_cast<Primitive*>((Component*)(*it));
+      showPrimitive(prim);
+    }
   }
 }
 
@@ -313,22 +357,38 @@ P1::gui()
 }
 
 void
+P1::renderAll(Reference<Primitive> primitive)
+{
+  if (primitive->sceneObject()->visible)
+  {
+    _program.setUniformMat4("transform", primitive->sceneObject()->transform()->localToWorldMatrix());
+
+    auto m = primitive->mesh();
+
+    m->bind();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES, m->vertexCount(), GL_UNSIGNED_INT, 0);
+
+    if (_current == primitive->sceneObject())
+    {
+      m->setVertexColor(selectedWireframeColor);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      glDrawElements(GL_TRIANGLES, m->vertexCount(), GL_UNSIGNED_INT, 0);
+      m->useVertexColors();
+    }
+  }
+}
+
+void
 P1::render()
 {
   GLWindow::render();
-  if (!_box->visible)
-    return;
-  _program.setUniformMat4("transform", _transform);
+  auto it = _scene->getScenePrimitiveIterator();
+  auto primEnd = _scene->getScenePrimitiveEnd();
+  for (; it != primEnd; it++)
+  {
+    renderAll(*it);
+  }
 
-  auto m = _primitive->mesh();
 
-  m->bind();
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glDrawElements(GL_TRIANGLES, m->vertexCount(), GL_UNSIGNED_INT, 0);
-  if (_current != _box)
-    return;
-  m->setVertexColor(selectedWireframeColor);  
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDrawElements(GL_TRIANGLES, m->vertexCount(), GL_UNSIGNED_INT, 0);
-  m->useVertexColors();
 }

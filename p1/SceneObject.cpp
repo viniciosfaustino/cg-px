@@ -43,16 +43,6 @@ namespace cg
 // SceneObject implementation
 // ===========
 
-  auto SceneObject::getComponentsIterator()
-  {
-    return this->_components.begin();
-  }
-
-  auto SceneObject::getComponentsEnd()
-  {
-    return this->_components.end();
-  }
-
   void
     SceneObject::setParent(Reference<SceneObject> parent)
   {
@@ -80,7 +70,7 @@ namespace cg
   void SceneObject::removeChild(Reference<SceneObject> child)
   {
     auto it = this->getIterator();
-    auto it_end = this->getEnd();
+    auto it_end = this->getIteratorEnd();
     bool found = false;
     while (!found && it != it_end)
     {
@@ -98,6 +88,7 @@ namespace cg
 
   void SceneObject::addComponent(Component* component)
   {
+    component->_sceneObject = this;
     _components.push_back(component);
   }
 

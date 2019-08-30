@@ -35,6 +35,7 @@
 
 #include "SceneObject.h"
 #include "graphics/Color.h"
+#include "Primitive.h"
 
 namespace cg
 { // begin namespace cg
@@ -48,6 +49,7 @@ class Scene: public SceneNode
 {
 private:
   Reference<SceneObject> _root;
+  std::vector  <Reference<Primitive>>  _scenePrimitives;
 
 
 public:
@@ -62,9 +64,28 @@ public:
     // do nothing
   }
 
+ 
+
   auto root()
   {
     return _root;
+  }
+
+  void addScenePrimitive(Reference<Primitive> primitive)
+  {
+    _scenePrimitives.push_back(primitive);
+  }
+
+  auto getScenePrimitiveIterator()
+  {
+
+    return  this->_scenePrimitives.begin();
+
+  }
+
+  auto getScenePrimitiveEnd()
+  {
+    return this->_scenePrimitives.end();
   }
   
 }; // Scene

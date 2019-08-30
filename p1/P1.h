@@ -25,12 +25,15 @@ public:
 
   /// Render the scene.
   void render() override;
+  void renderAll(Reference<Primitive> prim);
+
+  void showTransform(Reference<Transform>);
+  void showPrimitive(Reference<Primitive>);
 
 private:
   GLSL::Program _program;
   Reference<Scene> _scene;
-  Reference<SceneObject> _box;
-  Reference<SceneObject> _box2;
+  Reference<SceneObject> _box;  
   Reference<Primitive> _primitive;
   SceneNode* _current{};
   Color selectedWireframeColor{255, 102, 0};
@@ -39,8 +42,8 @@ private:
 
   void buildScene();
 
-  void recursionTree(ImGuiTreeNodeFlags, bool, Reference<SceneObject> object);
-
+  void recursionTree(bool, Reference<SceneObject> object);
+  void createNewObject(bool);
   void hierarchyWindow();
   void inspectorWindow();
   void sceneGui();
