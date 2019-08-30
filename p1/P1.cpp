@@ -67,8 +67,8 @@ inline void
 P1::buildScene()
 {
   _current = _scene = new Scene{ "Scene 1" };
-  //_box = new SceneObject{ "Box 1", _scene };
-  //Reference<SceneObject> _box2 = new SceneObject{ "Box 2", _scene }; 
+  _box = new SceneObject{ "Box 1", _scene };
+  _box2 = new SceneObject{ "Box 2", _scene }; 
   //Reference<SceneObject> _box3 = new SceneObject{ "Box 3", _scene };
   //Reference<Component> _comp1 = new Transform;
   int rootLevel = 3;
@@ -120,6 +120,45 @@ namespace ImGui
   void ShowDemoWindow(bool*);
 }
 
+void P1::recursionTree(ImGuiTreeNodeFlags flag, bool open, Reference<SceneObject> object)
+{
+	if (open)
+	{
+		auto it = object->getIterator();
+		auto list_end = object->getEnd();
+		for (; it != list_end; it++)
+		{
+			if ((*it)->get_size() != 0)
+			{
+				flag |= ImGuiTreeNodeFlags_OpenOnArrow; //flag pra saber que tem filhos
+				open = ImGui::TreeNodeEx((*it),
+					_current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
+					(*it)->name());
+
+				if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
+					_current = (*it); //todos que estão em current recebem a seleção
+
+				recursionTree(flag, open, (*it));
+			}
+			else /*Não tem filhos*/
+			{
+				flag |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+				open = ImGui::TreeNodeEx((*it),
+					_current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
+					(*it)->name());
+
+				if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
+					_current = (*it); //todos que estão em current recebem a seleção
+
+			}
+
+		}
+
+		ImGui::TreePop(); //serve pra mostrar efetivamente o role
+	}
+}
+
 inline void
 P1::hierarchyWindow()
 {
@@ -133,7 +172,7 @@ P1::hierarchyWindow()
     {
       if (ImGui::MenuItem("Box"))
       {
-        // TODO: create a new box.
+		// TODO: create a new box.
       }
       ImGui::EndMenu();
     }
@@ -148,17 +187,11 @@ P1::hierarchyWindow()
 
   if (ImGui::IsItemClicked())
     _current = _scene;
-  if (open)
-  {
-    flag |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-    ImGui::TreeNodeEx(_box,
-      _current == _box ? flag | ImGuiTreeNodeFlags_Selected : flag,
-      _box->name());
-    if (ImGui::IsItemClicked())
-      _current = _box;
-    ImGui::TreePop();
-  }
+
+  recursionTree(flag, open, _scene->root());
+
   ImGui::End();
+	//chamar função recursiva que popa os object scenes na tela
 }
 
 namespace ImGui

@@ -54,6 +54,7 @@ class SceneObject: public SceneNode
 public:
   bool visible{true};
 
+
   /// Constructs an empty scene object.
   SceneObject(const char* name, Scene* scene):
     SceneNode{name},
@@ -75,6 +76,12 @@ public:
     return _parent;
   }
 
+  size_t get_size()
+  {
+
+	  return this->_children.size();
+  }
+
   /// Sets the parent of this scene object.
   void setParent(Reference<SceneObject> parent);
 
@@ -89,9 +96,15 @@ public:
   void addChild(Reference<SceneObject> child);
   void addComponent(Component* component);
 
-  auto getIterator();
+  auto getIterator()
+  {
+	  return this->_children.begin();
+  }
 
-  auto getEnd();
+  auto getEnd()
+  {
+	  return this->_children.end();
+  }
 
   auto getComponentsIterator();
 
@@ -100,8 +113,8 @@ public:
 private:
   Scene* _scene;
   SceneObject* _parent;
-  std::vector  <Reference<SceneObject>>  children;
-  /*big*/ std::vector  <Reference<Component>>  components;
+  std::vector  <Reference<SceneObject>>  _children;
+  /*big*/ std::vector  <Reference<Component>>  _components;
   Transform _transform;
 
   friend class Scene;

@@ -47,7 +47,7 @@ namespace cg
 class Scene: public SceneNode
 {
 private:
-  SceneObject* _root;
+  Reference<SceneObject> _root;
 
 
 public:

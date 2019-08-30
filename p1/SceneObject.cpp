@@ -1,4 +1,4 @@
-//[]---------------------------------------------------------------[]
+	//[]---------------------------------------------------------------[]
 //|                                                                 |
 //| Copyright (C) 2018 Orthrus Group.                               |
 //|                                                                 |
@@ -43,24 +43,14 @@ namespace cg
 // SceneObject implementation
 // ===========
 
-  auto SceneObject::getIterator()
-  {
-    return this->children.begin();
-  }
-
-  auto SceneObject::getEnd()
-  {
-    return this->children.end();
-  }
-
   auto SceneObject::getComponentsIterator()
   {
-    return this->components.begin();
+    return this->_components.begin();
   }
 
   auto SceneObject::getComponentsEnd()
   {
-    return this->components.end();
+    return this->_components.end();
   }
 
   void
@@ -71,14 +61,14 @@ namespace cg
       _parent->removeChild(this);
       if (parent != nullptr)
       {
-        parent->children.push_back(this);
+        parent->_children.push_back(this);
       }
     }
 
     if (parent == nullptr)
     {      
       _parent = this->scene()->root();
-      _parent->children.push_back(this);
+      _parent->_children.push_back(this);
     }
     else
     {      
@@ -97,7 +87,7 @@ namespace cg
       if (it->get() == child) 
       {
         found = true;        
-        this->children.erase(it);
+        this->_children.erase(it);
       }
       else
       {
@@ -108,13 +98,13 @@ namespace cg
 
   void SceneObject::addComponent(Component* component)
   {
-    components.push_back(component);
+    _components.push_back(component);
   }
 
   void SceneObject::removeComponent(Component* component)
   {
     auto it = this->getComponentsIterator();
-    components.erase(it);
+    _components.erase(it);
 
   }
 
@@ -122,7 +112,7 @@ namespace cg
   void SceneObject::addChild(Reference<SceneObject> child)
 {
     child->_parent = this;
-    children.push_back(child);
+    _children.push_back(child);
 }
 
 } // end namespace cg

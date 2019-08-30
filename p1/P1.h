@@ -29,7 +29,8 @@ public:
 private:
   GLSL::Program _program;
   Reference<Scene> _scene;
-  Reference<SceneObject> _box;  
+  Reference<SceneObject> _box;
+  Reference<SceneObject> _box2;
   Reference<Primitive> _primitive;
   SceneNode* _current{};
   Color selectedWireframeColor{255, 102, 0};
@@ -37,6 +38,8 @@ private:
 
 
   void buildScene();
+
+  void recursionTree(ImGuiTreeNodeFlags, bool, Reference<SceneObject> object);
 
   void hierarchyWindow();
   void inspectorWindow();
