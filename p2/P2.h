@@ -122,7 +122,7 @@ private:
     }
   }
 
-  void createNewObject(bool empty);
+  void createNewObject(bool empty, std::string shape);
 
   void hierarchyWindow();
   void inspectorWindow();

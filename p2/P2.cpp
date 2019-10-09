@@ -41,7 +41,7 @@ P2::buildScene()
   int subLevel = 2;
   for (int i = 0; i < rootLevel; i++)
   {
-    createNewObject(false);
+    createNewObject(false, "Box");
   }
 
   // **Begin initialization of temporary attributes
@@ -70,7 +70,7 @@ namespace ImGui
 }
 
 inline void
-P2::createNewObject(bool empty)
+P2::createNewObject(bool empty, std::string shape)
 {
   static int boxCounter = 0;
   static int objectCounter = 0;
@@ -86,23 +86,22 @@ P2::createNewObject(bool empty)
     parent = dynamic_cast<SceneObject*>(_current);
   }
 
-  name = (empty) ? "Object " + std::to_string(objectCounter) : "Box " + std::to_string(boxCounter);
+  name = (empty) ? "Object " + std::to_string(objectCounter) : shape + " " + std::to_string(boxCounter);
 
   auto child = new SceneObject{ name.c_str(), _scene };
   if (!empty)
   {
-    auto p1 = makePrimitive(_defaultMeshes.find("Box"));
+    auto p1 = makePrimitive(_defaultMeshes.find(shape));
     child->addComponent(p1);
     _scene->addScenePrimitive(p1);
     boxCounter++;
   }
   else
   {
-   // child->visible = false;
     objectCounter++;
   }
 
-  parent->addChild(child);
+  parent->addChild(child);  
   _objects.push_back(child);
 }
 
@@ -118,13 +117,17 @@ P2::hierarchyWindow()
   {
     if (ImGui::MenuItem("Empty Object"))
     {
-      createNewObject(true);
+      createNewObject(true, "");
     }
     if (ImGui::BeginMenu("3D Object"))
     {
       if (ImGui::MenuItem("Box"))
       {
-        createNewObject(false);
+        createNewObject(false, "Box");
+      }
+      if (ImGui::MenuItem("Sphere"))
+      {
+        createNewObject(false, "Sphere");
       }
       ImGui::EndMenu();
     }

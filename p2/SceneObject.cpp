@@ -64,7 +64,7 @@ namespace cg
     {      
       _parent = parent;      
     }
-    
+    transform()->parentChanged();
   }
 
   void SceneObject::removeChild(Reference<SceneObject> child)
@@ -104,6 +104,7 @@ namespace cg
 {
     child->_parent = this;
     _children.push_back(child);
+    child->transform()->parentChanged();    
 }
 
 } // end namespace cg
