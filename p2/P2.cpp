@@ -347,17 +347,33 @@ P2::addComponentButton(SceneObject& object)
     ImGui::OpenPopup("AddComponentPopup");
   if (ImGui::BeginPopup("AddComponentPopup"))
   {
-    if (ImGui::MenuItem("Primitive"))
-    {
-      // TODO
-    }
     if (ImGui::MenuItem("Camera"))
     {
-      // TODO
+      //createNewObject(true);
+    }
+    if (ImGui::BeginMenu("Primitive"))
+    {
+      if (ImGui::MenuItem("Box"))
+      {
+        auto p = makePrimitive(_defaultMeshes.find("Box"));
+        object.addComponent(p);
+        _scene->addScenePrimitive(p);
+      }
+
+      if (ImGui::MenuItem("Sphere"))
+      {
+        auto p = makePrimitive(_defaultMeshes.find("Sphere"));
+        object.addComponent(p);
+        _scene->addScenePrimitive(p);
+      }
+
+      ImGui::EndMenu();
     }
     ImGui::EndPopup();
   }
+  ImGui::Separator();
 }
+
 
 inline void
 P2::sceneObjectGui()

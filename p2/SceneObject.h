@@ -65,7 +65,10 @@ public:
     
     addComponent(&_transform);
 
+
     makeUse(&_transform);
+    _hasPrimitive = false;
+    _hasTransform = true;
   }
 
   /// Returns the scene which this scene object belong to.
@@ -95,11 +98,6 @@ public:
     return &_transform;
   }
 
-  Component* component()
-  {
-    auto c = _components.at(1);    
-    return c;
-  }
   void removeChild(Reference<SceneObject> child);
   void removeComponent(Component* component);
 
@@ -126,11 +124,23 @@ public:
     return this->_components.end();
   }
 
+  bool hasTranform()
+  {
+    return _hasTransform;
+  }
+
+  bool hasPrimitive()
+  {
+    return _hasPrimitive;
+  }
+
 private:
   Scene* _scene;
   SceneObject* _parent;
   std::vector  <Reference<SceneObject>>  _children;
   std::vector  <Reference<Component>> _components;
+  bool _hasTransform;
+  bool _hasPrimitive;
   Transform _transform;
 
   friend class Scene;
