@@ -98,6 +98,7 @@ P2::createNewObject(bool empty)
   }
   else
   {
+   // child->visible = false;
     objectCounter++;
   }
 
@@ -709,18 +710,24 @@ P2::render()
   {
     if (!o->visible)
       continue;
-
-    auto component = o->component();
-
-    if (auto p = dynamic_cast<Primitive*>(component))
-      drawPrimitive(*p);
-    else if (auto c = dynamic_cast<Camera*>(component))
-      drawCamera(*c);
-    if (o == _current)
+    
+    auto it = o->getComponentsIterator();
+    auto itEnd = o->getComponentsEnd();
+    while(it != itEnd)
     {
-      auto t = o->transform();
-      _editor->drawAxes(t->position(), mat3f{t->rotation()});
+      auto component = it->get();
+      if (auto p = dynamic_cast<Primitive*>(component))
+        drawPrimitive(*p);
+      else if (auto c = dynamic_cast<Camera*>(component))
+        drawCamera(*c);
+      if (o == _current)
+      {
+        auto t = o->transform();
+        _editor->drawAxes(t->position(), mat3f{ t->rotation() });
+      }
+      it++;
     }
+    
   }
   // **End rendering of temporary scene objects
 }
