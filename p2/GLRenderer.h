@@ -44,35 +44,35 @@ namespace cg
 //
 // GLRenderer: OpenGL renderer class
 // ==========
-class GLRenderer: public Renderer
-{
-public:
-  GLRenderer(Scene& scene, Camera* camera = nullptr):
-    Renderer{scene, camera}
+  class GLRenderer : public Renderer
   {
-    // TODO
-  }
+  public:
+    GLRenderer(Scene& scene, Camera* camera = nullptr) :
+      Renderer{ scene, camera }
+    {
+      // TODO
+    }
 
 
-  void update() override;
-  void drawMesh(GLMesh* mesh, GLuint mode);
-  void drawPrimitive(Primitive& primitive);
-  void getAllObjects(Reference<SceneObject> parent);
-  void renderRecursive(Reference<SceneObject> parent);
-  void render() override;
+    void update() override;
+    void drawMesh(GLMesh* mesh, GLuint mode);
+    void drawPrimitive(Primitive& primitive);
+    void getAllObjects(Reference<SceneObject> parent);
+    void renderRecursive(Reference<SceneObject> parent);
+    void render() override;
 
-  void setProgram(GLSL::Program* program)
-  {
-    _program = program;
-  }
+    void setProgram(GLSL::Program* program)
+    {
+      _program = program;
+    }
 
-  auto getProgram()
-  {
-    return _program;
-  }
-private:
-  GLSL::Program* _program;
-}; // GLRenderer
+    auto getProgram()
+    {
+      return _program;
+    }
+  private:
+    GLSL::Program* _program;
+  }; // GLRenderer
 
 } // end namespace cg
 

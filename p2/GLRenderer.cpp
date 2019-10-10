@@ -40,86 +40,86 @@ namespace cg
 //
 // GLRenderer implementation
 // ==========
-void
-GLRenderer::update()
-{
-  Renderer::update();
-  // TODO
-}
-
-inline void
-GLRenderer::drawMesh(GLMesh* mesh, GLuint mode)
-{
-  glPolygonMode(GL_FRONT_AND_BACK, mode);
-  glDrawElements(GL_TRIANGLES, mesh->vertexCount(), GL_UNSIGNED_INT, 0);
-}
-
-
-inline void
-GLRenderer::drawPrimitive(Primitive& primitive)
-{
-  auto program = getProgram();
-
-  auto m = glMesh(primitive.mesh());
-
-  if (nullptr == m)
-    return;
-
-  auto t = primitive.transform();
-  auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
-
-  program->setUniformMat4("transform", t->localToWorldMatrix());
-  program->setUniformMat3("normalMatrix", normalMatrix);
-  program->setUniformVec4("color", primitive.color);
-  program->setUniform("flatMode", (int)0);
-  m->bind();
-  drawMesh(m, GL_FILL);  
-}
-
-
-void GLRenderer::renderRecursive(Reference<SceneObject> parent)
-{
-  auto it = parent->getIterator();
-  auto end = parent->getIteratorEnd();
-  while (it != end)
+  void
+    GLRenderer::update()
   {
-    if (it->get()->childrenSize() > 0)
-    {
-      renderRecursive(it->get());
-    }
-    else {
-      auto o = it->get();
-      if (!o->visible)
-        continue;
-
-      auto it = o->getComponentsIterator();
-      auto itEnd = o->getComponentsEnd();
-      while (it != itEnd)
-      {
-        auto component = it->get();
-        if (auto p = dynamic_cast<Primitive*>(component))
-          drawPrimitive(*p);
-        it++;
-      }
-    }
-    it++;
+    Renderer::update();
+    // TODO
   }
-}
 
-void
-GLRenderer::render()
-{  
-  const auto& bc = _scene->backgroundColor;
+  inline void
+    GLRenderer::drawMesh(GLMesh* mesh, GLuint mode)
+  {
+    glPolygonMode(GL_FRONT_AND_BACK, mode);
+    glDrawElements(GL_TRIANGLES, mesh->vertexCount(), GL_UNSIGNED_INT, 0);
+  }
 
-  glClearColor(bc.r, bc.g, bc.b, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // TODO
 
-  auto ec = _camera;
-  const auto& p = ec->transform()->position();
-  auto vp = vpMatrix(ec);
-  
-  renderRecursive(_scene->root());
-}
+  inline void
+    GLRenderer::drawPrimitive(Primitive& primitive)
+  {
+    auto program = getProgram();
+
+    auto m = glMesh(primitive.mesh());
+
+    if (nullptr == m)
+      return;
+
+    auto t = primitive.transform();
+    auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
+
+    program->setUniformMat4("transform", t->localToWorldMatrix());
+    program->setUniformMat3("normalMatrix", normalMatrix);
+    program->setUniformVec4("color", primitive.color);
+    program->setUniform("flatMode", (int)0);
+    m->bind();
+    drawMesh(m, GL_FILL);
+  }
+
+
+  void GLRenderer::renderRecursive(Reference<SceneObject> parent)
+  {
+    auto it = parent->getIterator();
+    auto end = parent->getIteratorEnd();
+    while (it != end)
+    {
+      if (it->get()->childrenSize() > 0)
+      {
+        renderRecursive(it->get());
+      }
+      else {
+        auto o = it->get();
+        if (!o->visible)
+          continue;
+
+        auto it = o->getComponentsIterator();
+        auto itEnd = o->getComponentsEnd();
+        while (it != itEnd)
+        {
+          auto component = it->get();
+          if (auto p = dynamic_cast<Primitive*>(component))
+            drawPrimitive(*p);
+          it++;
+        }
+      }
+      it++;
+    }
+  }
+
+  void
+    GLRenderer::render()
+  {
+    const auto& bc = _scene->backgroundColor;
+
+    glClearColor(bc.r, bc.g, bc.b, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // TODO
+
+    auto ec = _camera;
+    const auto& p = ec->transform()->position();
+    auto vp = vpMatrix(ec);
+
+    renderRecursive(_scene->root());
+  }
 
 } // end namespace cg

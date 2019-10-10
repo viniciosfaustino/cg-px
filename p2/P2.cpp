@@ -18,6 +18,7 @@ makePrimitive(MeshMapIterator mit)
 }
 
 
+
 inline void
 P2::buildScene()
 {
@@ -327,6 +328,7 @@ P2::inspectPrimitive(Primitive& primitive)
     sceneObject->setPrimitive(nullptr);
     _scene->removeScenePrimitive(&primitive);
   }
+
 }
 
 void
@@ -809,7 +811,7 @@ P2::renderScene()
   if (auto camera = Camera::current())
   {
     _renderer->setCamera(camera);
-    _renderer->setImageSize(width(), height());    
+    _renderer->setImageSize(width(), height());
     _renderer->setProgram(&_program);
     _renderer->render();
     _program.use();
