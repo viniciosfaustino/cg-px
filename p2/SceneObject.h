@@ -35,6 +35,8 @@
 
 #include "SceneNode.h"
 #include "Transform.h"
+#include "Camera.h"
+#include "Primitive.h"
 #include <vector>
 #include <iterator>
 
@@ -67,8 +69,8 @@ public:
 
 
     makeUse(&_transform);
-    _hasPrimitive = false;
-    _hasTransform = true;
+    _camera = nullptr;
+    _primitive = nullptr;    
   }
 
   /// Returns the scene which this scene object belong to.
@@ -85,7 +87,6 @@ public:
 
   size_t childrenSize()
   {
-
 	  return this->_children.size();
   }
 
@@ -99,6 +100,7 @@ public:
   }
 
   void removeChild(Reference<SceneObject> child);
+  void removeChildRecursive(Reference<SceneObject> current, Reference<SceneObject> child);
   void removeComponent(Component* component);
 
   void addChild(Reference<SceneObject> child);
@@ -124,23 +126,33 @@ public:
     return this->_components.end();
   }
 
-  bool hasTranform()
+  auto primitive()
   {
-    return _hasTransform;
+    return _primitive;
   }
 
-  bool hasPrimitive()
+  auto camera()
   {
-    return _hasPrimitive;
+    return _camera;
+  }
+
+  void setPrimitive(Reference<Primitive> primitive)
+  {
+    _primitive = primitive;
+  }  
+
+  void setCamera(Reference<Camera> camera)
+  {
+    _camera = camera;
   }
 
 private:
   Scene* _scene;
   SceneObject* _parent;
   std::vector  <Reference<SceneObject>>  _children;
-  std::vector  <Reference<Component>> _components;
-  bool _hasTransform;
-  bool _hasPrimitive;
+  std::vector  <Reference<Component>> _components;  
+  Reference<Primitive> _primitive;
+  Reference<Camera> _camera;
   Transform _transform;
 
   friend class Scene;

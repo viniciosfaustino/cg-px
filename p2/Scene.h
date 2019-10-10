@@ -78,6 +78,25 @@ public:
     _scenePrimitives.push_back(primitive);
   }
 
+  void removeScenePrimitive(Reference<Primitive> primitive)
+  {
+    auto it = _scenePrimitives.begin();
+    auto end = _scenePrimitives.end();
+    bool found = false;
+    while(!found && it != end)
+    {
+      if (it->get() == primitive)
+      {
+        _scenePrimitives.erase(it);
+        found = true;
+      }
+      else
+      {
+        it++;
+      }
+    }
+  }
+
   auto getScenePrimitiveIterator()
   {
 

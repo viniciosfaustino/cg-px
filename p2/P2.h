@@ -124,6 +124,10 @@ private:
 
   void createNewObject(bool empty, std::string shape);
 
+  void removeObjectRecursive(Reference<SceneObject> object);
+
+  void removeObject(Reference<SceneObject> object);
+
   void hierarchyWindow();
   void inspectorWindow();
   void assetsWindow();
@@ -131,6 +135,7 @@ private:
   void sceneGui();
   void showTransform(Reference<Transform> component);
   void showPrimitive(Reference<Primitive> component);
+  void removeComponentButton(SceneObject& object);
   void sceneObjectGui();
   void objectGui();
   void editorViewGui();

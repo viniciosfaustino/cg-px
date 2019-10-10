@@ -86,6 +86,39 @@ namespace cg
     }    
   }
 
+  void SceneObject::removeChildRecursive(Reference<SceneObject> current, Reference<SceneObject> child)
+  {
+    auto it = current->getIterator();
+    auto it_end = current->getIteratorEnd();
+    bool found = false;
+    while (!found && it != it_end)
+    {
+      if (it->get() == child)
+      {
+        found = true;
+        auto cIt = child->getIterator();
+        auto cEnd = child->getIteratorEnd();
+        while ((child->childrenSize() > 0) && (cIt != cEnd))
+        {
+          auto aux = cIt;
+          aux++;
+          removeChildRecursive(child, cIt->get());
+          cIt = aux;
+        }
+        auto p = it->get()->primitive();
+        if (p)
+        {          
+          _scene->removeScenePrimitive(p);
+        }        
+        current->_children.erase(it);        
+      }
+      else
+      {
+        it++;
+      }
+    }
+  }
+
   void SceneObject::addComponent(Component* component)
   {
     component->_sceneObject = this;
@@ -95,7 +128,20 @@ namespace cg
   void SceneObject::removeComponent(Component* component)
   {
     auto it = this->getComponentsIterator();
-    _components.erase(it);
+    auto end = this->getComponentsEnd();
+    bool found = false;
+    while (!found && it != end)
+    {
+      if (it->get() == component)
+      {
+        _components.erase(it);
+        found = true;
+      }
+      else
+      {
+        it++;
+      }
+    }
 
   }
 

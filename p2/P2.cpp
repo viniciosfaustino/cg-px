@@ -94,6 +94,7 @@ P2::createNewObject(bool empty, std::string shape)
     auto p1 = makePrimitive(_defaultMeshes.find(shape));
     child->addComponent(p1);
     _scene->addScenePrimitive(p1);
+    child->setPrimitive((Reference<Primitive>)p1);
     boxCounter++;
   }
   else
@@ -104,6 +105,40 @@ P2::createNewObject(bool empty, std::string shape)
   parent->addChild(child);  
   _objects.push_back(child);
 }
+
+inline void
+P2::removeObjectRecursive(Reference<SceneObject> object)
+  {
+    auto it = _objects.begin();
+    auto it_end = _objects.end();
+    bool found = false;
+    while (!found && it != it_end)
+    {
+      if (it->get() == object)
+      {
+        found = true;
+        auto cIt = object->getIterator();
+        auto cEnd = object->getIteratorEnd();
+        while ((object->childrenSize() > 0) && (cIt != cEnd))
+        {
+          auto aux = cIt;
+          aux++;
+          removeObjectRecursive(cIt->get());
+          cIt = aux;
+        }
+        auto p = it->get()->primitive();
+        if (p)
+        {          
+          _scene->removeScenePrimitive(p);
+        }        
+        _objects.erase(it);
+      }
+      else
+      {
+        it++;
+      }
+    }
+  }
 
 
 inline void
@@ -133,7 +168,20 @@ P2::hierarchyWindow()
     }
     ImGui::EndPopup();
   }
+  ImGui::SameLine();
+  if (ImGui::Button("Delete"))
+  {
+    if (_current != _scene)
+    {
+      auto aux = dynamic_cast<SceneObject*>(_current);
+      auto parent = aux->parent();
+      _current = parent;
+      removeObjectRecursive(aux);
+      parent->removeChildRecursive(parent, aux);
+    }
+  }
   ImGui::Separator();
+
 
   ImGuiTreeNodeFlags flag{ ImGuiTreeNodeFlags_OpenOnArrow };
   auto open = ImGui::TreeNodeEx(_scene,
@@ -272,6 +320,15 @@ P2::inspectPrimitive(Primitive& primitive)
     ImGui::EndPopup();
   }
   ImGui::ColorEdit3("Mesh Color", (float*)&primitive.color);
+
+  if (ImGui::Button("Delete"))
+  {
+    auto sceneObject = primitive.sceneObject();
+    sceneObject->removeComponent(dynamic_cast<Component*>(&primitive));    
+    sceneObject->setPrimitive(nullptr);
+    _scene->removeScenePrimitive(&primitive);
+  }
+
 }
 
 void
@@ -338,6 +395,12 @@ P2::inspectCamera(Camera& camera)
       f = n + MIN_DEPTH;
     camera.setClippingPlanes(n, f);
   }
+  if (ImGui::Button("Delete"))
+  {
+    auto sceneObject = camera.sceneObject();
+    sceneObject->removeComponent(dynamic_cast<Component*>(&camera));
+    sceneObject->setCamera(nullptr);
+  }
 }
 
 inline void
@@ -349,22 +412,32 @@ P2::addComponentButton(SceneObject& object)
   {
     if (ImGui::MenuItem("Camera"))
     {
-      //createNewObject(true);
+      if (!object.camera())
+      {
+        Reference<Camera> c = new Camera;
+        object.addComponent(c);
+        object.setCamera(c);
+      }      
     }
     if (ImGui::BeginMenu("Primitive"))
     {
-      if (ImGui::MenuItem("Box"))
+      if (!object.primitive())
       {
-        auto p = makePrimitive(_defaultMeshes.find("Box"));
-        object.addComponent(p);
-        _scene->addScenePrimitive(p);
-      }
+        if (ImGui::MenuItem("Box"))
+        {
+          auto p = makePrimitive(_defaultMeshes.find("Box"));
+          object.addComponent(p);
+          _scene->addScenePrimitive(p);
+          object.setPrimitive((Reference<Primitive>)p);
+        }
 
-      if (ImGui::MenuItem("Sphere"))
-      {
-        auto p = makePrimitive(_defaultMeshes.find("Sphere"));
-        object.addComponent(p);
-        _scene->addScenePrimitive(p);
+        if (ImGui::MenuItem("Sphere"))
+        {
+          auto p = makePrimitive(_defaultMeshes.find("Sphere"));
+          object.addComponent(p);
+          _scene->addScenePrimitive(p);          
+          object.setPrimitive((Reference<Primitive>)p);
+        }
       }
 
       ImGui::EndMenu();
@@ -374,7 +447,11 @@ P2::addComponentButton(SceneObject& object)
   ImGui::Separator();
 }
 
+inline void
+P2::removeComponentButton(SceneObject& object)
+{
 
+}
 inline void
 P2::sceneObjectGui()
 {
@@ -395,6 +472,8 @@ P2::sceneObjectGui()
   auto itEnd = object->getComponentsEnd();
   while (it != itEnd)
   {
+    auto aux = it;
+    aux++;
     auto component = it->get();
     if (auto p = dynamic_cast<Primitive*>(component))
     {
@@ -426,7 +505,7 @@ P2::sceneObjectGui()
         inspectCamera(*c);
       }
     }
-    it++;
+    it = aux;
   }
 
   
@@ -681,6 +760,7 @@ P2::renderScene()
     _renderer->setImageSize(width(), height());
     _renderer->render();
     _program.use();
+    
   }
 }
 
