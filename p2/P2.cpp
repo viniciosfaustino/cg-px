@@ -748,7 +748,61 @@ P2::drawPrimitive(Primitive& primitive)
 inline void
 P2::drawCamera(Camera& camera)
 {
-  // TODO
+	float frontPlaneHeight;
+	float frontPlaneWidth;
+	float backPlaneHeight;
+	float backPlaneWidth;
+
+	frontPlaneHeight = 2 * camera.F() * tan(camera.viewAngle() / 2);
+	frontPlaneWidth = camera.aspectRatio() * frontPlaneHeight;
+	backPlaneHeight = 2 * camera.B() * tan(camera.viewAngle() / 2);
+	backPlaneWidth = camera.aspectRatio() * backPlaneHeight;
+	//_editor->drawLine(vec3f{ 0, 2, 0 }, vec3f{ 0, -2, 0 });
+	auto camObj = camera.sceneObject();
+	vec3f localPos = (camObj->transform())->localPosition();
+
+	//Pontos (W/2,H/2,-B) (-W/2,H/2,-B) (W/2,-H/2,-B) (-W/2,-H/2,-B) 
+
+	//Front Plane
+	_editor->drawLine(vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() }, 
+		              vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() });
+
+	_editor->drawLine(vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() }, 
+		              vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() });
+
+	_editor->drawLine(vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() },
+					  vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() });
+
+	_editor->drawLine(vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() },
+		              vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() });
+
+	
+	//Back Plane
+	_editor->drawLine(vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() },
+		              vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() },
+		              vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() },
+		              vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() },
+		              vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	//Connecting Lines of frustum
+	_editor->drawLine(vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() },
+		              vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() },
+		              vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] - backPlaneWidth / 2, localPos[1] + backPlaneHeight / 2, localPos[2] - camera.B() },
+		              vec3f{ localPos[0] - frontPlaneWidth / 2, localPos[1] + frontPlaneHeight / 2, localPos[2] - camera.F() });
+
+	_editor->drawLine(vec3f{ localPos[0] + backPlaneWidth / 2, localPos[1] - backPlaneHeight / 2, localPos[2] - camera.B() },
+	              vec3f{ localPos[0] + frontPlaneWidth / 2, localPos[1] - frontPlaneHeight / 2, localPos[2] - camera.F() });
+
 }
 
 inline void
