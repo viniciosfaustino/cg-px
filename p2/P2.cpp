@@ -746,7 +746,26 @@ P2::drawPrimitive(Primitive& primitive)
   drawMesh(m, GL_LINE);
 }
 
+inline void
+P2::preview() {
+	GLint previousViewPort[4];
+	glGetIntegerv(GL_VIEWPORT, previousViewPort);
+	glViewport(10, 10, 320, 180);
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(10, 10, 320, 180);
+	
+	
+	
+	glClearColor(0, 0, 0, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+	//glViewport(10, 10, 320, 180);
+	//glScissor(10, 10, 320, 180);
+	renderScene();
+	glDisable(GL_SCISSOR_TEST);
+	glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
+}
 
 inline void
 P2::drawCamera(Camera& camera)
@@ -914,6 +933,7 @@ P2::render()
   _program.setUniformMat4("vpMatrix", vp);
   _program.setUniformVec4("ambientLight", _scene->ambientLight);
   _program.setUniformVec3("lightPosition", p);
+  bool auxCam = false;
   for (const auto& o : _objects)
   {
     if (!o->visible)
@@ -926,8 +946,12 @@ P2::render()
       auto component = it->get();
       if (auto p = dynamic_cast<Primitive*>(component))
         drawPrimitive(*p);
-      else if (auto c = dynamic_cast<Camera*>(component))
-        drawCamera(*c);
+	  else if (auto c = dynamic_cast<Camera*>(component))
+	  {
+		  drawCamera(*c);
+		  auxCam = true;
+
+	  }
       if (o == _current)
       {
         auto t = o->transform();
@@ -937,6 +961,8 @@ P2::render()
     }
     
   }
+  if(auxCam)
+	  preview();
   // **End rendering of temporary scene objects
 }
 
