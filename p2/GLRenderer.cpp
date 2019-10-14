@@ -113,7 +113,7 @@ namespace cg
 
     glClearColor(bc.r, bc.g, bc.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // TODO
+   
 
     auto ec = camera();
     const auto& p = ec->transform()->position();
