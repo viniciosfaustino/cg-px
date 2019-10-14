@@ -115,9 +115,15 @@ namespace cg
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // TODO
 
-    auto ec = _camera;
+    auto ec = camera();
     const auto& p = ec->transform()->position();
     auto vp = vpMatrix(ec);
+
+	auto program = getProgram();
+	program->setUniformMat4("vpMatrix", vp);
+	program->setUniformVec4("ambientLight", _scene->ambientLight);
+	program->setUniformVec3("lightPosition", p);
+	//as ultimas tres linhas servem para alterar as posições da camera no arquivo que é executado pela gpu
 
     renderRecursive(_scene->root());
   }
