@@ -1,5 +1,6 @@
 #include "geometry/MeshSweeper.h"
 #include "P2.h"
+#include <iostream>
 
 MeshMap P2::_defaultMeshes;
 
@@ -888,6 +889,15 @@ P2::windowResizeEvent(int width, int height)
   _editor->camera()->setAspectRatio(float(width) / float(height));
   return true;
 }
+void
+P2::cameraFocus()
+{
+	auto camera = _editor->camera();
+	SceneObject* obj = dynamic_cast<SceneObject*>(_current);
+	camera->transform()->setPosition(obj->transform()->position());
+	camera->transform()->translate(vec3f{ 0,0,5});
+
+}
 
 bool
 P2::keyInputEvent(int key, int action, int mods)
@@ -913,6 +923,9 @@ P2::keyInputEvent(int key, int action, int mods)
       break;
     case GLFW_KEY_E:
       _moveFlags.enable(MoveBits::Down, active);
+	  break;
+	case GLFW_KEY_F:
+	  cameraFocus();
       break;
   }
   return false;

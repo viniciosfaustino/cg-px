@@ -78,6 +78,7 @@ private:
 
   void buildScene();
   void renderScene();
+  void cameraFocus();
 
   void mainMenu();
   void fileMenu();
