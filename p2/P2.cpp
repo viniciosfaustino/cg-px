@@ -764,7 +764,18 @@ P2::preview() {
 
 	//glViewport(10, 10, 320, 180);
 	//glScissor(10, 10, 320, 180); 
-  renderScene();
+  if (auto obj = dynamic_cast<SceneObject*>(_current))
+  {
+    if (obj->camera())
+      _renderer->setCamera(obj->camera());
+      _renderer->setImageSize(width(), height());
+      _renderer->setProgram(&_program);
+      _renderer->render();
+      _program.use();
+
+  }
+  
+  //render();
 	glDisable(GL_SCISSOR_TEST);
 	glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
 }
@@ -948,16 +959,14 @@ P2::render()
         drawPrimitive(*p);
 	    else if (auto c = dynamic_cast<Camera*>(component))
 	    {
+        auxCam = true;
         if (o == _current)
         {
           if (o->camera())
           {
-            drawCamera(*c);
-            auxCam = true;
-          }
-          
-        }
-		    
+            drawCamera(*c);            
+          }          
+        }		    
 	    }
       if (o == _current)
       {
