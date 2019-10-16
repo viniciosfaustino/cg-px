@@ -80,6 +80,7 @@ private:
   void renderScene();
   void cameraFocus();
   void preview();
+  void dragNDrop(SceneObject*);
 
   void mainMenu();
   void fileMenu();
@@ -103,6 +104,8 @@ private:
           if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
             _current = (*it); //todos que estão em current recebem a seleção
 
+		  dragNDrop(*it);
+
           recursionTree(open, (*it));
         }
         else /*Não tem filhos*/
@@ -115,6 +118,8 @@ private:
 
           if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
             _current = (*it); //todos que estão em current recebem a seleção
+		  
+		  dragNDrop(*it);
 
         }
 

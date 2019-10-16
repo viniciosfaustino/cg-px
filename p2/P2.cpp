@@ -143,6 +143,31 @@ P2::removeObjectRecursive(Reference<SceneObject> object)
     }
   }
 
+inline void
+P2::dragNDrop(SceneObject* obj)
+{
+	if (ImGui::BeginDragDropSource())
+	{
+		ImGui::SetDragDropPayload("obj", &obj, sizeof(obj));
+		//ImGui::Text(obj->name);
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
+		{
+			SceneObject* t_obj = *(SceneObject**)payload->Data;
+			
+			
+			t_obj->setParent(obj);
+
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+}
+
 
 inline void
 P2::hierarchyWindow()
@@ -193,6 +218,8 @@ P2::hierarchyWindow()
 
   if (ImGui::IsItemClicked())
     _current = _scene;
+
+
 
   recursionTree(open, _scene->root());
 
