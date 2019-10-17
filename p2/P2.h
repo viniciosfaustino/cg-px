@@ -73,9 +73,10 @@ private:
   bool _showAssets{true};
   bool _showEditorView{true};
   ViewMode _viewMode{ViewMode::Editor};
+  
 
   static MeshMap _defaultMeshes;
-
+ // bool isFatherNChild(SceneObject*, SceneObject*);
   void buildScene();
   void renderScene();
   void cameraFocus();

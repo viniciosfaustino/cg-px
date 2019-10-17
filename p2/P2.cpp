@@ -159,8 +159,10 @@ P2::dragNDrop(SceneObject* obj)
 		{
 			SceneObject* t_obj = *(SceneObject**)payload->Data;
 			
-			t_obj->setParent(obj);
-
+			if (obj->parent() != t_obj)
+			{
+				t_obj->setParent(obj);
+			}
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -217,6 +219,18 @@ P2::hierarchyWindow()
 
   if (ImGui::IsItemClicked())
     _current = _scene;
+  
+  if (ImGui::BeginDragDropTarget())
+  {
+	  if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
+	  {
+		  SceneObject* t_obj = *(SceneObject * *)payload->Data;
+
+		  t_obj->setParent(nullptr);
+
+	  }
+	  ImGui::EndDragDropTarget();
+  }
 
 
 
