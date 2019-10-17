@@ -802,7 +802,7 @@ P2::preview() {
 
   }
   
-  //render();
+  renderScene();
 	glDisable(GL_SCISSOR_TEST);
 	glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
 }
