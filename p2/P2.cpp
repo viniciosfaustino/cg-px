@@ -159,7 +159,6 @@ P2::dragNDrop(SceneObject* obj)
 		{
 			SceneObject* t_obj = *(SceneObject**)payload->Data;
 			
-			
 			t_obj->setParent(obj);
 
 		}

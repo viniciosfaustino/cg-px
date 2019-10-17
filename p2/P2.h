@@ -92,6 +92,7 @@ private:
     {
       auto it = object->getIterator();
       auto vecEnd = object->getIteratorEnd();
+	  auto size = object->childrenSize();
       for (; it != vecEnd; it++)
       {
         if ((*it)->childrenSize() != 0)
@@ -123,6 +124,8 @@ private:
 
         }
 
+		if (size != object->childrenSize())
+			break;
       }
 
       ImGui::TreePop(); //serve pra mostrar efetivamente o role
