@@ -49,8 +49,8 @@ class Scene: public SceneNode
 {
 private:
   Reference<SceneObject> _root;
-  std::vector  <Reference<Primitive>>  _scenePrimitives;
-
+  std::vector  <Reference<Component>>  _scenePrimitives;
+  friend class SceneObject;
 
 public:
   Color backgroundColor{Color::gray};
@@ -73,12 +73,12 @@ public:
     return _root;
   }
 
-  void addScenePrimitive(Reference<Primitive> primitive)
+  void addScenePrimitive(Reference<Component> primitive)
   {
     _scenePrimitives.push_back(primitive);
   }
 
-  void removeScenePrimitive(Reference<Primitive> primitive)
+  void removeScenePrimitive(Reference<Component> primitive)
   {
     auto it = _scenePrimitives.begin();
     auto end = _scenePrimitives.end();

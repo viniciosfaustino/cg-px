@@ -11,12 +11,12 @@
 
 using namespace cg;
 
-class P2: public GLWindow
+class P2 : public GLWindow
 {
 public:
-  P2(int width, int height):
-    GLWindow{"cg2019 - P2", width, height},
-    _program{"P2"}
+  P2(int width, int height) :
+    GLWindow{ "cg2019 - P2", width, height },
+    _program{ "P2" }
   {
     // do nothing
   }
@@ -26,6 +26,10 @@ public:
 
   /// Update the GUI.
   void gui() override;
+
+  void recursiveRender();
+
+  void recursiveRender(Reference<SceneObject> obj);
 
   /// Render the scene.
   void render() override;
@@ -63,20 +67,20 @@ private:
   std::vector<Reference<SceneObject>> _objects;
   // **End temporary attributes
   SceneNode* _current{};
-  Color _selectedWireframeColor{255, 102, 0};
+  Color _selectedWireframeColor{ 255, 102, 0 };
   Flags<MoveBits> _moveFlags{};
   Flags<DragBits> _dragFlags{};
   int _pivotX;
   int _pivotY;
   int _mouseX;
   int _mouseY;
-  bool _showAssets{true};
-  bool _showEditorView{true};
-  ViewMode _viewMode{ViewMode::Editor};
-  
+  bool _showAssets{ true };
+  bool _showEditorView{ true };
+  ViewMode _viewMode{ ViewMode::Editor };
+
 
   static MeshMap _defaultMeshes;
- // bool isFatherNChild(SceneObject*, SceneObject*);
+  // bool isFatherNChild(SceneObject*, SceneObject*);
   void buildScene();
   void renderScene();
   void cameraFocus();
@@ -93,7 +97,7 @@ private:
     {
       auto it = object->getIterator();
       auto vecEnd = object->getIteratorEnd();
-	  auto size = object->childrenSize();
+      auto size = object->childrenSize();
       for (; it != vecEnd; it++)
       {
         if ((*it)->childrenSize() != 0)
@@ -106,7 +110,7 @@ private:
           if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
             _current = (*it); //todos que estão em current recebem a seleção
 
-		  dragNDrop(*it);
+          dragNDrop(*it);
 
           recursionTree(open, (*it));
         }
@@ -120,13 +124,13 @@ private:
 
           if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
             _current = (*it); //todos que estão em current recebem a seleção
-		  
-		  dragNDrop(*it);
+
+          dragNDrop(*it);
 
         }
 
-		if (size != object->childrenSize())
-			break;
+        if (size != object->childrenSize())
+          break;
       }
 
       ImGui::TreePop(); //serve pra mostrar efetivamente o role

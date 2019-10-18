@@ -78,6 +78,10 @@ public:
   {
     return _scene;
   }
+  ~SceneObject();
+
+  void removeComponentFromScene();
+
 
   /// Returns the parent of this scene object.
   auto parent() const

@@ -15,7 +15,7 @@ P2::buildDefaultMeshes()
 inline Primitive*
 makePrimitive(MeshMapIterator mit)
 {
-  return new Primitive{mit->second, mit->first};
+  return new Primitive{ mit->second, mit->first };
 }
 
 
@@ -24,12 +24,12 @@ inline void
 P2::buildScene()
 {
   int boxCounter = 0;
-  _current = _scene = new Scene{"Scene 1"};
-  _editor = new SceneEditor{*_scene};
+  _current = _scene = new Scene{ "Scene 1" };
+  _editor = new SceneEditor{ *_scene };
   _editor->setDefaultView((float)width() / (float)height());
 
   auto o = new SceneObject{ "Main Camera", _scene };
-  
+
   auto camera = new Camera;
   o->setCamera(camera);
 
@@ -49,7 +49,7 @@ P2::buildScene()
 
   // **Begin initialization of temporary attributes
   // It should be replaced by your scene initialization  
-  
+
 }
 
 void
@@ -59,7 +59,8 @@ P2::initialize()
   Assets::initialize();
   buildDefaultMeshes();
   buildScene();
-  _renderer = new GLRenderer{*_scene};
+  _renderer = new GLRenderer{ *_scene };
+  _renderer->setProgram(&_program);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(1.0f, 1.0f);
@@ -105,67 +106,54 @@ P2::createNewObject(bool empty, std::string shape)
     objectCounter++;
   }
 
-  parent->addChild(child);  
+  parent->addChild(child);
   _objects.push_back(child);
 }
 
-inline void
-P2::removeObjectRecursive(Reference<SceneObject> object)
+
+void P2::removeObject(Reference<SceneObject> object)
+{
+  auto it = _objects.begin();
+  auto end = _objects.end();
+  bool found = false;
+  while (!found && it != end)
   {
-    auto it = _objects.begin();
-    auto it_end = _objects.end();
-    bool found = false;
-    while (!found && it != it_end)
+    if (*it == object)
     {
-      if (it->get() == object)
-      {
-        found = true;
-        auto cIt = object->getIterator();
-        auto cEnd = object->getIteratorEnd();
-        while ((object->childrenSize() > 0) && (cIt != cEnd))
-        {
-          auto aux = cIt;
-          aux++;
-          removeObjectRecursive(cIt->get());
-          cIt = aux;
-        }
-        auto p = it->get()->primitive();
-        if (p)
-        {          
-          _scene->removeScenePrimitive(p);
-        }        
-        _objects.erase(it);
-      }
-      else
-      {
-        it++;
-      }
+      found = true;
+      _objects.erase(it);
     }
+    else
+    {
+      it++;
+    }
+
   }
+}
 
 inline void
 P2::dragNDrop(SceneObject* obj)
 {
-	if (ImGui::BeginDragDropSource())
-	{
-		ImGui::SetDragDropPayload("obj", &obj, sizeof(obj));
-		//ImGui::Text(obj->name);
-		ImGui::EndDragDropSource();
-	}
+  if (ImGui::BeginDragDropSource())
+  {
+    ImGui::SetDragDropPayload("obj", &obj, sizeof(obj));
+    //ImGui::Text(obj->name);
+    ImGui::EndDragDropSource();
+  }
 
-	if (ImGui::BeginDragDropTarget())
-	{
-		if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
-		{
-			SceneObject* t_obj = *(SceneObject**)payload->Data;
-			
-			if (obj->parent() != t_obj)
-			{
-				t_obj->setParent(obj);
-			}
-		}
-		ImGui::EndDragDropTarget();
-	}
+  if (ImGui::BeginDragDropTarget())
+  {
+    if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
+    {
+      SceneObject* t_obj = *(SceneObject * *)payload->Data;
+
+      if (obj->parent() != t_obj)
+      {
+        t_obj->setParent(obj);
+      }
+    }
+    ImGui::EndDragDropTarget();
+  }
 
 }
 
@@ -205,8 +193,9 @@ P2::hierarchyWindow()
       auto aux = dynamic_cast<SceneObject*>(_current);
       auto parent = aux->parent();
       _current = parent;
-      removeObjectRecursive(aux);
-      parent->removeChildRecursive(parent, aux);
+      aux->removeComponentFromScene();
+      removeObject(aux);
+      parent->removeChild(aux);
     }
   }
   ImGui::Separator();
@@ -219,17 +208,17 @@ P2::hierarchyWindow()
 
   if (ImGui::IsItemClicked())
     _current = _scene;
-  
+
   if (ImGui::BeginDragDropTarget())
   {
-	  if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
-	  {
-		  SceneObject* t_obj = *(SceneObject * *)payload->Data;
+    if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
+    {
+      SceneObject* t_obj = *(SceneObject * *)payload->Data;
 
-		  t_obj->setParent(nullptr);
+      t_obj->setParent(nullptr);
 
-	  }
-	  ImGui::EndDragDropTarget();
+    }
+    ImGui::EndDragDropTarget();
   }
 
 
@@ -243,49 +232,49 @@ P2::hierarchyWindow()
 namespace ImGui
 { // begin namespace ImGui
 
-void
-ObjectNameInput(NameableObject* object)
-{
-  const int bufferSize{128};
-  static NameableObject* current;
-  static char buffer[bufferSize];
-
-  if (object != current)
+  void
+    ObjectNameInput(NameableObject* object)
   {
-    strcpy_s(buffer, bufferSize, object->name());
-    current = object;
+    const int bufferSize{ 128 };
+    static NameableObject* current;
+    static char buffer[bufferSize];
+
+    if (object != current)
+    {
+      strcpy_s(buffer, bufferSize, object->name());
+      current = object;
+    }
+    if (ImGui::InputText("Name", buffer, bufferSize))
+      object->setName(buffer);
   }
-  if (ImGui::InputText("Name", buffer, bufferSize))
-    object->setName(buffer);
-}
 
-inline bool
-ColorEdit3(const char* label, Color& color)
-{
-  return ImGui::ColorEdit3(label, (float*)&color);
-}
+  inline bool
+    ColorEdit3(const char* label, Color& color)
+  {
+    return ImGui::ColorEdit3(label, (float*)& color);
+  }
 
-inline bool
-DragVec3(const char* label, vec3f& v)
-{
-  return DragFloat3(label, (float*)&v, 0.1f, 0.0f, 0.0f, "%.2g");
-}
+  inline bool
+    DragVec3(const char* label, vec3f& v)
+  {
+    return DragFloat3(label, (float*)& v, 0.1f, 0.0f, 0.0f, "%.2g");
+  }
 
-void
-TransformEdit(Transform* transform)
-{
-  vec3f temp;
+  void
+    TransformEdit(Transform* transform)
+  {
+    vec3f temp;
 
-  temp = transform->localPosition();
-  if (ImGui::DragVec3("Position", temp))
-    transform->setLocalPosition(temp);
-  temp = transform->localEulerAngles();
-  if (ImGui::DragVec3("Rotation", temp))
-    transform->setLocalEulerAngles(temp);
-  temp = transform->localScale();
-  if (ImGui::DragVec3("Scale", temp))
-    transform->setLocalScale(temp);
-}
+    temp = transform->localPosition();
+    if (ImGui::DragVec3("Position", temp))
+      transform->setLocalPosition(temp);
+    temp = transform->localEulerAngles();
+    if (ImGui::DragVec3("Rotation", temp))
+      transform->setLocalEulerAngles(temp);
+    temp = transform->localScale();
+    if (ImGui::DragVec3("Scale", temp))
+      transform->setLocalScale(temp);
+  }
 
 } // end namespace ImGui
 
@@ -336,7 +325,7 @@ P2::inspectPrimitive(Primitive& primitive)
   ImGui::InputText("Mesh", buffer, 16, ImGuiInputTextFlags_ReadOnly);
   if (ImGui::BeginDragDropTarget())
   {
-    if (auto* payload = ImGui::AcceptDragDropPayload("PrimitiveMesh"))
+    if (auto * payload = ImGui::AcceptDragDropPayload("PrimitiveMesh"))
     {
       auto mit = *(MeshMapIterator*)payload->Data;
       primitive.setMesh(mit->second, mit->first);
@@ -362,12 +351,12 @@ P2::inspectPrimitive(Primitive& primitive)
         primitive.setMesh(mit->second, mit->first);
     ImGui::EndPopup();
   }
-  ImGui::ColorEdit3("Mesh Color", (float*)&primitive.color);
+  ImGui::ColorEdit3("Mesh Color", (float*)& primitive.color);
 
   if (ImGui::Button("Delete"))
   {
     auto sceneObject = primitive.sceneObject();
-    sceneObject->removeComponent(dynamic_cast<Component*>(&primitive));    
+    sceneObject->removeComponent(dynamic_cast<Component*>(&primitive));
     sceneObject->setPrimitive(nullptr);
     _scene->removeScenePrimitive(&primitive);
   }
@@ -377,7 +366,7 @@ P2::inspectPrimitive(Primitive& primitive)
 void
 P2::inspectCamera(Camera& camera)
 {
-  static const char* projectionNames[]{"Perspective", "Orthographic"};
+  static const char* projectionNames[]{ "Perspective", "Orthographic" };
   auto cp = camera.projectionType();
 
   if (ImGui::BeginCombo("Projection", projectionNames[cp]))
@@ -460,7 +449,7 @@ P2::addComponentButton(SceneObject& object)
         Reference<Camera> c = new Camera;
         object.addComponent(c);
         object.setCamera(c);
-      }      
+      }
     }
     if (ImGui::BeginMenu("Primitive"))
     {
@@ -478,7 +467,7 @@ P2::addComponentButton(SceneObject& object)
         {
           auto p = makePrimitive(_defaultMeshes.find("Sphere"));
           object.addComponent(p);
-          _scene->addScenePrimitive(p);          
+          _scene->addScenePrimitive(p);
           object.setPrimitive((Reference<Primitive>)p);
         }
       }
@@ -527,7 +516,7 @@ P2::sceneObjectGui()
       {
         // TODO: delete primitive
       }
-      else if (open)        
+      else if (open)
         inspectPrimitive(*p);
     }
     else if (auto c = dynamic_cast<Camera*>(component))
@@ -551,7 +540,7 @@ P2::sceneObjectGui()
     it = aux;
   }
 
-  
+
   // **End inspection of temporary components
 }
 
@@ -677,12 +666,12 @@ showStyleSelector(const char* label)
     return false;
   switch (style)
   {
-    case 0: ImGui::StyleColorsClassic();
-      break;
-    case 1: ImGui::StyleColorsDark();
-      break;
-    case 2: ImGui::StyleColorsLight();
-      break;
+  case 0: ImGui::StyleColorsClassic();
+    break;
+  case 1: ImGui::StyleColorsDark();
+    break;
+  case 2: ImGui::StyleColorsLight();
+    break;
   }
   return true;
 }
@@ -712,7 +701,7 @@ P2::mainMenu()
         ImGui::MenuItem("Edit View", nullptr, true, false);
       else
       {
-        static const char* viewLabels[]{"Editor", "Renderer"};
+        static const char* viewLabels[]{ "Editor", "Renderer" };
 
         if (ImGui::BeginCombo("View", viewLabels[_viewMode]))
         {
@@ -773,7 +762,7 @@ P2::drawPrimitive(Primitive& primitive)
     return;
 
   auto t = primitive.transform();
-  auto normalMatrix = mat3f{t->worldToLocalMatrix()}.transposed();
+  auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
 
   _program.setUniformMat4("transform", t->localToWorldMatrix());
   _program.setUniformMat3("normalMatrix", normalMatrix);
@@ -790,40 +779,38 @@ P2::drawPrimitive(Primitive& primitive)
 
 inline void
 P2::preview() {
-	GLint previousViewPort[4];
-	glGetIntegerv(GL_VIEWPORT, previousViewPort);
-	glViewport(10, 10, 320, 180);
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(10, 10, 320, 180);
-	
-	
-	
-	glClearColor(0, 0, 0, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  GLint previousViewPort[4];
+  glGetIntegerv(GL_VIEWPORT, previousViewPort);
+  glViewport(9, 9, 322, 182);
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(9, 9, 322, 182);
 
 
-	//glViewport(10, 10, 320, 180);
-	//glScissor(10, 10, 320, 180); 
-  if (auto obj = dynamic_cast<SceneObject*>(_current))
-  {
-    if (obj->camera())
-      _renderer->setCamera(obj->camera());
-      _renderer->setImageSize(width(), height());
-      _renderer->setProgram(&_program);
-      _renderer->render();
-      _program.use();
 
-  }
-  
-  renderScene();
-	glDisable(GL_SCISSOR_TEST);
-	glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
+  glClearColor(0, 0, 0, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+  glViewport(10, 10, 320, 180);
+  glScissor(10, 10, 320, 180); 
+  /*if (auto obj = dynamic_cast<SceneObject*>(_current))
+  {*/
+    /*if (obj->camera())*/
+      /*_renderer->setCamera(obj->camera());
+    _renderer->setImageSize(width(), height());
+    _renderer->setProgram(&_program);*/
+    _renderer->render();
+    //_program.use();
+
+  //}
+  glDisable(GL_SCISSOR_TEST);
+  glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
 }
 
 inline void
 P2::drawCamera(Camera& camera)
 {
-    
+
   if (auto obj = dynamic_cast<SceneObject*>(_current))
   {
     if (obj->camera())
@@ -925,8 +912,8 @@ P2::drawCamera(Camera& camera)
 
 
       }
-    }    
-  }	
+    }
+  }
 }
 
 inline void
@@ -939,16 +926,18 @@ P2::renderScene()
     _renderer->setProgram(&_program);
     _renderer->render();
     _program.use();
-    
+
   }
 }
 
 constexpr auto CAMERA_RES = 0.01f;
 constexpr auto ZOOM_SCALE = 1.01f;
 
+
+
 void
 P2::render()
-{  
+{
   if (_viewMode == ViewMode::Renderer)
   {
     renderScene();
@@ -984,42 +973,40 @@ P2::render()
   _program.setUniformMat4("vpMatrix", vp);
   _program.setUniformVec4("ambientLight", _scene->ambientLight);
   _program.setUniformVec3("lightPosition", p);
-  bool auxCam = false;
-  for (const auto& o : _objects)
+
+  auto it = _scene->getScenePrimitiveIterator();
+  auto end = _scene->getScenePrimitiveEnd();
+  Camera* cam = nullptr;
+  for (; it != end; it++)
   {
-    if (!o->visible)
-      continue;
-    
-    auto it = o->getComponentsIterator();
-    auto itEnd = o->getComponentsEnd();
-    while(it != itEnd)
+    auto o = it->get()->sceneObject();
+    if (auto p = dynamic_cast<Primitive*>(it->get()))
     {
-      auto component = it->get();
-      if (auto p = dynamic_cast<Primitive*>(component))
-        drawPrimitive(*p);
-	    else if (auto c = dynamic_cast<Camera*>(component))
-	    {
-        auxCam = true;
-        if (o == _current)
-        {
-          if (o->camera())
-          {
-            drawCamera(*c);            
-          }          
-        }		    
-	    }
-      if (o == _current)
-      {
-        auto t = o->transform();
-        _editor->drawAxes(t->position(), mat3f{ t->rotation() });
-      }
-      it++;
+      drawPrimitive(*p);
     }
-    
+    else if (auto c = dynamic_cast<Camera*>(it->get()))
+    {
+      drawCamera(*c);
+      if (_current == o)
+      {
+        cam = c;
+        _renderer->setCamera(c);
+        _renderer->setImageSize(width(), height());        
+      }
+      
+    }
+    if (o == _current)
+    {
+      auto t = o->transform();
+      _editor->drawAxes(t->position(), mat3f{t->rotation()});
+    }
   }
-  if(auxCam)
-	  preview();
-  // **End rendering of temporary scene objects
+  if (cam)
+  {
+    preview();
+  }
+  
+  
 }
 
 bool
@@ -1031,10 +1018,10 @@ P2::windowResizeEvent(int width, int height)
 void
 P2::cameraFocus()
 {
-	auto camera = _editor->camera();
-	SceneObject* obj = dynamic_cast<SceneObject*>(_current);
-	camera->transform()->setPosition(obj->transform()->position());
-	camera->transform()->translate(vec3f{ 0,0,5});
+  auto camera = _editor->camera();
+  SceneObject* obj = dynamic_cast<SceneObject*>(_current);
+  camera->transform()->setPosition(obj->transform()->position());
+  camera->transform()->translate(vec3f{ 0,0,5 });
 
 }
 
@@ -1045,27 +1032,27 @@ P2::keyInputEvent(int key, int action, int mods)
 
   switch (key)
   {
-    case GLFW_KEY_W:
-      _moveFlags.enable(MoveBits::Forward, active);
-      break;
-    case GLFW_KEY_S:
-      _moveFlags.enable(MoveBits::Back, active);
-      break;
-    case GLFW_KEY_A:
-      _moveFlags.enable(MoveBits::Left, active);
-      break;
-    case GLFW_KEY_D:
-      _moveFlags.enable(MoveBits::Right, active);
-      break;
-    case GLFW_KEY_Q:
-      _moveFlags.enable(MoveBits::Up, active);
-      break;
-    case GLFW_KEY_E:
-      _moveFlags.enable(MoveBits::Down, active);
-	  break;
-	case GLFW_KEY_F:
-	  cameraFocus();
-      break;
+  case GLFW_KEY_W:
+    _moveFlags.enable(MoveBits::Forward, active);
+    break;
+  case GLFW_KEY_S:
+    _moveFlags.enable(MoveBits::Back, active);
+    break;
+  case GLFW_KEY_A:
+    _moveFlags.enable(MoveBits::Left, active);
+    break;
+  case GLFW_KEY_D:
+    _moveFlags.enable(MoveBits::Right, active);
+    break;
+  case GLFW_KEY_Q:
+    _moveFlags.enable(MoveBits::Up, active);
+    break;
+  case GLFW_KEY_E:
+    _moveFlags.enable(MoveBits::Down, active);
+    break;
+  case GLFW_KEY_F:
+    cameraFocus();
+    break;
   }
   return false;
 }

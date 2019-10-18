@@ -43,6 +43,33 @@ namespace cg
 // SceneObject implementation
 // ===========
 
+  SceneObject::~SceneObject()
+  {    
+    _components.clear();
+    _children.clear();
+  }
+
+  void SceneObject::removeComponentFromScene()
+  {
+    auto it = getComponentsIterator();
+    auto end = getComponentsEnd();    
+    for (; it != end; it++)
+    {
+      if (auto p =dynamic_cast<Primitive*>((Component*)* it))
+      {
+        _scene->removeScenePrimitive(p);
+      }
+      
+    }
+    auto childIt = getIterator();
+    auto childItEnd = getIteratorEnd();
+    for (; childIt != childItEnd; childIt++)
+    {
+      childIt->get()->removeComponentFromScene();
+    }
+  }
+
+
   void
     SceneObject::setParent(Reference<SceneObject> parent)
   {
@@ -86,41 +113,12 @@ namespace cg
     }    
   }
 
-  void SceneObject::removeChildRecursive(Reference<SceneObject> current, Reference<SceneObject> child)
-  {
-    auto it = current->getIterator();
-    auto it_end = current->getIteratorEnd();
-    bool found = false;
-    while (!found && it != it_end)
-    {
-      if (it->get() == child)
-      {
-        found = true;
-        auto cIt = child->getIterator();
-        auto cEnd = child->getIteratorEnd();
-        while ((child->childrenSize() > 0) && (cIt != cEnd))
-        {
-          auto aux = cIt;
-          aux++;
-          removeChildRecursive(child, cIt->get());
-          cIt = aux;
-        }
-        auto p = it->get()->primitive();
-        if (p)
-        {          
-          _scene->removeScenePrimitive(p);
-        }        
-        current->_children.erase(it);        
-      }
-      else
-      {
-        it++;
-      }
-    }
-  }
-
   void SceneObject::addComponent(Component* component)
   {
+    if (auto c = dynamic_cast<Camera*>(component))
+    {
+      _scene->addScenePrimitive(c);
+    }
     component->_sceneObject = this;
     _components.push_back(component);
   }
@@ -142,9 +140,7 @@ namespace cg
         it++;
       }
     }
-
   }
-
 
   void SceneObject::addChild(Reference<SceneObject> child)
 {
