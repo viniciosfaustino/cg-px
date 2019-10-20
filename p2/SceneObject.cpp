@@ -32,7 +32,6 @@
 
 #include "SceneObject.h"
 #include "Scene.h"
-#include <iostream>
 
 namespace cg
 { // begin namespace cg
@@ -42,6 +41,28 @@ namespace cg
 //
 // SceneObject implementation
 // ===========
+
+  bool SceneObject::isRelated(SceneObject* obj)
+  {
+    if (this != nullptr && obj->parent() != nullptr)
+    {
+      if (obj->parent() == this)
+      {
+        return true;
+      }
+      else
+      {
+        if (obj->parent() == this->scene()->root()) {
+          return false;
+        }
+        isRelated(obj->parent());
+
+      }
+    }
+  }
+
+
+
 
   SceneObject::~SceneObject()
   {    
@@ -132,6 +153,10 @@ namespace cg
     {
       if (it->get() == component)
       {
+        if (! dynamic_cast<Transform*>(component))
+        {
+          _scene->removeScenePrimitive(component);
+        }
         _components.erase(it);
         found = true;
       }

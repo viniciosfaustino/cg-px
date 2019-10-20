@@ -106,6 +106,7 @@ public:
   void removeChild(Reference<SceneObject> child);
   void removeChildRecursive(Reference<SceneObject> current, Reference<SceneObject> child);
   void removeComponent(Component* component);
+  bool isRelated(SceneObject*);
 
   void addChild(Reference<SceneObject> child);
   void addComponent(Component* component);

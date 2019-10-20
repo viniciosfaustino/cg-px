@@ -143,20 +143,18 @@ P2::dragNDrop(SceneObject* obj)
 
   if (ImGui::BeginDragDropTarget())
   {
-    if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj"))
+    if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("obj", 3))
     {
       SceneObject* t_obj = *(SceneObject * *)payload->Data;
 
-      if (obj->parent() != t_obj)
-      {
+      if (!t_obj->isRelated(obj))
         t_obj->setParent(obj);
-      }
+
     }
     ImGui::EndDragDropTarget();
   }
 
 }
-
 
 inline void
 P2::hierarchyWindow()
@@ -357,8 +355,7 @@ P2::inspectPrimitive(Primitive& primitive)
   {
     auto sceneObject = primitive.sceneObject();
     sceneObject->removeComponent(dynamic_cast<Component*>(&primitive));
-    sceneObject->setPrimitive(nullptr);
-    _scene->removeScenePrimitive(&primitive);
+    sceneObject->setPrimitive(nullptr);    
   }
 
 }
@@ -502,9 +499,14 @@ P2::sceneObjectGui()
   // It should be replaced by your component inspection
   auto it = object->getComponentsIterator();
   auto itEnd = object->getComponentsEnd();
+  auto size = object->childrenSize();
   while (it != itEnd)
   {
     auto aux = it;
+    if (size != object->childrenSize())
+    {
+      break;
+    }
     aux++;
     auto component = it->get();
     if (auto p = dynamic_cast<Primitive*>(component))
@@ -792,17 +794,17 @@ P2::preview() {
 
 
   glViewport(10, 10, 320, 180);
-  glScissor(10, 10, 320, 180); 
+  glScissor(10, 10, 320, 180);
   /*if (auto obj = dynamic_cast<SceneObject*>(_current))
   {*/
-    /*if (obj->camera())*/
-      /*_renderer->setCamera(obj->camera());
-    _renderer->setImageSize(width(), height());
-    _renderer->setProgram(&_program);*/
-    _renderer->render();
-    //_program.use();
+  /*if (obj->camera())*/
+    /*_renderer->setCamera(obj->camera());
+  _renderer->setImageSize(width(), height());
+  _renderer->setProgram(&_program);*/
+  _renderer->render();
+  //_program.use();
 
-  //}
+//}
   glDisable(GL_SCISSOR_TEST);
   glViewport(previousViewPort[0], previousViewPort[1], previousViewPort[2], previousViewPort[3]);
 }
@@ -986,27 +988,27 @@ P2::render()
     }
     else if (auto c = dynamic_cast<Camera*>(it->get()))
     {
-      drawCamera(*c);
       if (_current == o)
       {
+        drawCamera(*c);
         cam = c;
         _renderer->setCamera(c);
-        _renderer->setImageSize(width(), height());        
+        _renderer->setImageSize(width(), height());
       }
-      
+
     }
     if (o == _current)
     {
       auto t = o->transform();
-      _editor->drawAxes(t->position(), mat3f{t->rotation()});
+      _editor->drawAxes(t->position(), mat3f{ t->rotation() });
     }
   }
   if (cam)
   {
     preview();
   }
-  
-  
+
+
 }
 
 bool
@@ -1020,8 +1022,10 @@ P2::cameraFocus()
 {
   auto camera = _editor->camera();
   SceneObject* obj = dynamic_cast<SceneObject*>(_current);
-  camera->transform()->setPosition(obj->transform()->position());
-  camera->transform()->translate(vec3f{ 0,0,5 });
+  if (obj != nullptr) {
+    camera->transform()->setPosition(obj->transform()->position());
+    camera->transform()->translate(vec3f{ 0,0,5 });
+  }
 
 }
 
