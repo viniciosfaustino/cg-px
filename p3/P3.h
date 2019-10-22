@@ -24,6 +24,57 @@ public:
 
   /// Initialize the app.
   void initialize() override;
+  void recursionTree(bool open, Reference<SceneObject> object)
+  {
+    if (open)
+    {
+      auto it = object->getIterator();
+      auto vecEnd = object->getIteratorEnd();
+      auto size = object->childrenSize();
+      for (; it != vecEnd; it++)
+      {
+        if ((*it)->childrenSize() != 0)
+        {
+          auto flag = ImGuiTreeNodeFlags_OpenOnArrow; //flag pra saber que tem filhos
+          open = ImGui::TreeNodeEx((*it),
+            _current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
+            (*it)->name());
+
+          if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
+            _current = (*it); //todos que estão em current recebem a seleção
+
+          dragNDrop(*it);
+
+          recursionTree(open, (*it));
+        }
+        else /*Não tem filhos*/
+        {
+          auto flag = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+          open = ImGui::TreeNodeEx((*it),
+            _current == (*it) ? flag | ImGuiTreeNodeFlags_Selected : flag,
+            (*it)->name());
+
+          if (ImGui::IsItemClicked())//serve para colocar a seleção sobre o objeto clicado
+            _current = (*it); //todos que estão em current recebem a seleção
+
+          dragNDrop(*it);
+
+        }
+
+        if (size != object->childrenSize())
+          break;
+      }
+
+      ImGui::TreePop(); //serve pra mostrar efetivamente o role
+    }
+  }
+
+  void createNewObject(bool empty, std::string shape);
+
+  void removeObject(Reference<SceneObject> object);
+
+  void dragNDrop(SceneObject* obj);
 
   /// Update the GUI.
   void gui() override;
@@ -100,6 +151,7 @@ private:
   void addComponentButton(SceneObject&);
 
   void drawPrimitive(Primitive&);
+  void preview();
   void drawLight(Light&);
   void drawCamera(Camera&);
 

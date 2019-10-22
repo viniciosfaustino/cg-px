@@ -167,7 +167,16 @@ Transform::update()
   _rotation = p->_rotation * _localRotation;
   _lossyScale = scale(_rotation, _matrix);
   _inverseMatrix = inverseLocalMatrix() * p->_inverseMatrix;
-  // TODO: update the transform of all scene object's children.
+  // TODO: update the transform of all scene object's children.  
+  auto obj = sceneObject();
+  auto it = obj->getIterator();
+  auto end = obj->getIteratorEnd();
+  while (it != end)
+  {
+    auto child = it->get();
+    child->transform()->update();
+    it++;
+  }
   changed = true;
 }
 
@@ -185,6 +194,7 @@ Transform::parentChanged()
   _lossyScale = scale(_rotation, _matrix);
   _inverseMatrix = inverseLocalMatrix() * p->_inverseMatrix;
   // TODO: update the transform of all scene object's children.
+  update();
   changed = true;
 }
 

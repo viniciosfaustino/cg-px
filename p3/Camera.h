@@ -70,6 +70,9 @@ public:
   float clippingPlanes(float& F, float& B) const;
   ProjectionType projectionType() const;
 
+  float F() const;
+  float B() const;
+
   void setViewAngle(float viewAngle);
   void setHeight(float height);
   void setAspectRatio(float aspect);
@@ -106,6 +109,18 @@ private:
   void updateProjection();
 
 }; // Camera
+
+inline float
+Camera::F() const
+{
+	return _F;
+}
+
+inline float
+Camera::B() const
+{
+	return _B;
+}
 
 inline float
 Camera::viewAngle() const

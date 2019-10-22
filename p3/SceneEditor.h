@@ -52,7 +52,7 @@ public:
 
   SceneEditor(Scene& scene):
     _scene{&scene},
-    _editor{"\0x1bSceneEditor", scene},
+    _editor{"\0x1bSceneEditor", &scene},
     _camera{new Camera}
   {
     SceneObject::makeUse(&_editor);

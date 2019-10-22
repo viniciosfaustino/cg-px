@@ -1,6 +1,6 @@
 //[]---------------------------------------------------------------[]
 //|                                                                 |
-//| Copyright (C) 2018, 2019 Orthrus Group.                         |
+//| Copyright (C) 2018 Orthrus Group.                               |
 //|                                                                 |
 //| This software is provided 'as-is', without any express or       |
 //| implied warranty. In no event will the authors be held liable   |
@@ -28,13 +28,17 @@
 // Class definition for scene object.
 //
 // Author(s): Paulo Pagliosa (and your name)
-// Last revision: 23/09/2019
+// Last revision: 25/08/2018
 
 #ifndef __SceneObject_h
 #define __SceneObject_h
 
 #include "SceneNode.h"
 #include "Transform.h"
+#include "Camera.h"
+#include "Primitive.h"
+#include <vector>
+#include <iterator>
 
 namespace cg
 { // begin namespace cg
@@ -52,13 +56,21 @@ class SceneObject: public SceneNode
 public:
   bool visible{true};
 
+
   /// Constructs an empty scene object.
-  SceneObject(const char* name, Scene& scene):
-    SceneNode{name},
-    _scene{&scene},
+  SceneObject(const char* name, Scene* scene) :
+    SceneNode{ name },
+    _scene{ scene },
     _parent{}
-  {
-    addComponent(makeUse(&_transform));    
+  {    
+    //auto _trans = new Transform{};
+    
+    addComponent(&_transform);
+
+
+    makeUse(&_transform);
+    _camera = nullptr;
+    _primitive = nullptr;    
   }
 
   /// Returns the scene which this scene object belong to.
@@ -66,6 +78,10 @@ public:
   {
     return _scene;
   }
+  ~SceneObject();
+
+  void removeComponentFromScene();
+
 
   /// Returns the parent of this scene object.
   auto parent() const
@@ -73,43 +89,76 @@ public:
     return _parent;
   }
 
-  /// Sets the parent of this scene object.
-  void setParent(SceneObject* parent);
-
-  /// Returns the transform of this scene object.
-  auto transform() const
+  size_t childrenSize()
   {
-    return &_transform;
+	  return this->_children.size();
   }
 
+  /// Sets the parent of this scene object.
+  void setParent(Reference<SceneObject> parent);
+
+  /// Returns the transform of this scene object.
   auto transform()
   {
     return &_transform;
   }
 
-  void addComponent(Component* component)
+  void removeChild(Reference<SceneObject> child);
+  void removeChildRecursive(Reference<SceneObject> current, Reference<SceneObject> child);
+  void removeComponent(Component* component);
+  bool isRelated(SceneObject*);
+
+  void addChild(Reference<SceneObject> child);
+  void addComponent(Component* component);
+
+  auto getIterator()
   {
-    component->_sceneObject = this;
-    // TODO
-    _component = Component::makeUse(component); // temporary
+	  return this->_children.begin();
   }
 
-  // **Begin temporary methods
-  // They should be replace by your child and component iterators
-  Component* component()
+  auto getIteratorEnd()
   {
-    return _component;
+	  return this->_children.end();
   }
-  // **End temporary methods
+
+  auto getComponentsIterator()
+  {
+    return this->_components.begin();
+  }
+
+  auto getComponentsEnd()
+  {
+    return this->_components.end();
+  }
+
+  auto primitive()
+  {
+    return _primitive;
+  }
+
+  auto camera()
+  {
+    return _camera;
+  }
+
+  void setPrimitive(Reference<Primitive> primitive)
+  {
+    _primitive = primitive;
+  }  
+
+  void setCamera(Reference<Camera> camera)
+  {
+    _camera = camera;
+  }
 
 private:
   Scene* _scene;
   SceneObject* _parent;
+  std::vector  <Reference<SceneObject>>  _children;
+  std::vector  <Reference<Component>> _components;  
+  Reference<Primitive> _primitive;
+  Reference<Camera> _camera;
   Transform _transform;
-  // **Begin temporary attributes
-  // They should be replace by your child and component collections
-  Reference<Component> _component;
-  // **End temporary attributes
 
   friend class Scene;
 

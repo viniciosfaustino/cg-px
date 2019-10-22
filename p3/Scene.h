@@ -1,6 +1,6 @@
 //[]---------------------------------------------------------------[]
 //|                                                                 |
-//| Copyright (C) 2018, 2019 Orthrus Group.                         |
+//| Copyright (C) 2018 Orthrus Group.                               |
 //|                                                                 |
 //| This software is provided 'as-is', without any express or       |
 //| implied warranty. In no event will the authors be held liable   |
@@ -28,13 +28,14 @@
 // Class definition for scene.
 //
 // Author(s): Paulo Pagliosa (and your name)
-// Last revision: 21/09/2019
+// Last revision: 25/08/2018
 
 #ifndef __Scene_h
 #define __Scene_h
 
 #include "SceneObject.h"
 #include "graphics/Color.h"
+#include "Primitive.h"
 
 namespace cg
 { // begin namespace cg
@@ -46,32 +47,68 @@ namespace cg
 // =====
 class Scene: public SceneNode
 {
+private:
+  Reference<SceneObject> _root;
+  std::vector  <Reference<Component>>  _scenePrimitives;
+  friend class SceneObject;
+
 public:
   Color backgroundColor{Color::gray};
-  Color ambientLight{Color::black};
+  Color ambientLight{ Color::black };
+
 
   /// Constructs an empty scene.
   Scene(const char* name):
-    SceneNode{name},
-    _root{"\0x1bRoot", *this}
+    SceneNode{name}
   {
-    SceneObject::makeUse(&_root);
+    _root = new SceneObject{ "root", this };
+    _root->visible = false;
+    // do nothing
   }
 
-  /// Returns the root scene object of this scene.
-  auto root() const
-  {
-    return &_root;
-  }
+ 
 
   auto root()
   {
-    return &_root;
+    return _root;
   }
 
-private:
-  SceneObject _root;
+  void addScenePrimitive(Reference<Component> primitive)
+  {
+    _scenePrimitives.push_back(primitive);
+  }
 
+  void removeScenePrimitive(Reference<Component> primitive)
+  {
+    auto it = _scenePrimitives.begin();
+    auto end = _scenePrimitives.end();
+    bool found = false;
+    while(!found && it != end)
+    {
+      if (it->get() == primitive)
+      {
+        _scenePrimitives.erase(it);
+        found = true;
+      }
+      else
+      {
+        it++;
+      }
+    }
+  }
+
+  auto getScenePrimitiveIterator()
+  {
+
+    return  this->_scenePrimitives.begin();
+
+  }
+
+  auto getScenePrimitiveEnd()
+  {
+    return this->_scenePrimitives.end();
+  }
+  
 }; // Scene
 
 } // end namespace cg
