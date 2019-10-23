@@ -495,15 +495,9 @@ P3::sceneObjectGui()
   // It should be replaced by your component inspection
   auto it = object->getComponentsIterator();
   auto itEnd = object->getComponentsEnd();
-  auto size = object->childrenSize();
-  while (it != itEnd)
-  {
-    auto aux = it;
-    if (size != object->childrenSize())
-    {
-      break;
-    }
-    aux++;
+  auto size = object->componentsSize();
+  for (;it != itEnd; it++)
+    {    
     auto component = it->get();
     if (auto p = dynamic_cast<Primitive*>(component))
     {
@@ -538,8 +532,11 @@ P3::sceneObjectGui()
         Camera::setCurrent(isCurrent ? c : nullptr);
         inspectCamera(*c);
       }
-    }
-    it = aux;
+    }    
+    if (size != object->componentsSize())
+    {
+      break;
+    }    
   }
 
 

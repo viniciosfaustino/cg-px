@@ -94,6 +94,11 @@ public:
 	  return this->_children.size();
   }
 
+  size_t componentsSize()
+  {
+    return this->_components.size();
+  }
+
   /// Sets the parent of this scene object.
   void setParent(Reference<SceneObject> parent);
 
