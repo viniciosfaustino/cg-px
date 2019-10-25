@@ -482,6 +482,10 @@ P3::addComponentButton(SceneObject& object)
 			{
 				
 				l->setType(cg::Light::Type::Point);
+				l->fl(0);
+				l->gammaL(45);
+				l->decayExponent(0);
+				object.addComponent(l);
 				
 				
 
@@ -489,19 +493,25 @@ P3::addComponentButton(SceneObject& object)
 			if (ImGui::MenuItem("Directional"))
 			{
 				l->setType(cg::Light::Type::Directional);
+				l->fl(0);
+				l->gammaL(45);
+				l->decayExponent(0);
+				object.addComponent(l);
 				
 			}
 			if (ImGui::MenuItem("Spot"))
 			{
 				l->setType(cg::Light::Type::Spot);
+				l->fl(0);
+				l->gammaL(45);
+				l->decayExponent(0);
+				object.addComponent(l);
 		
 			}
 
-			l->fl(0);
-			l->gammaL(45);
-			l->decayExponent(0);
+			
 
-			object.addComponent(l);
+			
 		}
 		ImGui::EndMenu();
 	}
