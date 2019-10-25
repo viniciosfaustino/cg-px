@@ -472,6 +472,39 @@ P3::addComponentButton(SceneObject& object)
 
       ImGui::EndMenu();
     }
+	if(ImGui::BeginMenu("Light"))
+	{
+		if (!object.light())
+		{
+			Reference<Light> l = new Light();
+
+			if (ImGui::MenuItem("Point"))
+			{
+				
+				l->setType(cg::Light::Type::Point);
+				
+				
+
+			}
+			if (ImGui::MenuItem("Directional"))
+			{
+				l->setType(cg::Light::Type::Directional);
+				
+			}
+			if (ImGui::MenuItem("Spot"))
+			{
+				l->setType(cg::Light::Type::Spot);
+		
+			}
+
+			l->fl(0);
+			l->gammaL(45);
+			l->decayExponent(0);
+
+			object.addComponent(l);
+		}
+		ImGui::EndMenu();
+	}
     ImGui::EndPopup();
   }
   ImGui::Separator();
@@ -532,7 +565,29 @@ P3::sceneObjectGui()
         Camera::setCurrent(isCurrent ? c : nullptr);
         inspectCamera(*c);
       }
-    }    
+    } 
+	else if (auto l = dynamic_cast<Light*>(component))
+	{
+		auto notDelete{ true };
+		auto open = ImGui::CollapsingHeader(l->typeName(), &notDelete);
+
+		if (!notDelete)
+		{
+			auto sceneObject = l->sceneObject();
+			sceneObject->removeComponent(dynamic_cast<Component*>(l));
+			sceneObject->setLight(nullptr);
+		}
+		else if (open)
+		{
+			//auto isCurrent = l == Light::current();
+
+			//ImGui::Checkbox("Current", &isCurrent);
+			//Camera::setCurrent(isCurrent ? l : nullptr);
+			inspectLight(*l);
+		}
+
+
+	}
     if (size != object->componentsSize())
     {
       break;

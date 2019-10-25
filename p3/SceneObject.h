@@ -37,6 +37,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "Primitive.h"
+#include "Light.h"
 #include <vector>
 #include <iterator>
 
@@ -70,7 +71,8 @@ public:
 
     makeUse(&_transform);
     _camera = nullptr;
-    _primitive = nullptr;    
+    _primitive = nullptr;
+	_light = nullptr;
   }
 
   /// Returns the scene which this scene object belong to.
@@ -146,6 +148,18 @@ public:
     return _camera;
   }
 
+  auto light()
+  {
+
+	  return _light;
+  }
+
+  void setLight(Reference<Light> light)
+  {
+
+	  _light = light;
+  }
+
   void setPrimitive(Reference<Primitive> primitive)
   {
     _primitive = primitive;
@@ -163,6 +177,7 @@ private:
   std::vector  <Reference<Component>> _components;  
   Reference<Primitive> _primitive;
   Reference<Camera> _camera;
+  Reference<Light> _light;
   Transform _transform;
 
   friend class Scene;
