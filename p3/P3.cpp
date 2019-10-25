@@ -359,6 +359,40 @@ P3::inspectLight(Light& light)
   }
   light.setType(lt);
   ImGui::ColorEdit3("Color", light.color);
+  if (light.type() == Light::Type::Point)
+  {
+	  auto falloff = light.fl();
+	  if (ImGui::SliderInt("Falloff",
+		  &falloff,
+		  0,
+		  2
+		  ))
+	
+      light.fl(falloff < 0 ? 0 : falloff);
+	  light.fl(falloff > 2 ? 2 : falloff);
+  }
+  else if (light.type() == Light::Type::Spot)
+  {
+	  auto decayExponent = light.decayExponent();
+	  if (ImGui::SliderInt("Decay Exponent",
+		  &decayExponent,
+		  0,
+		  2
+	  ))
+
+      light.decayExponent(decayExponent < 0 ? 0 : decayExponent);
+	  light.decayExponent(decayExponent > 2 ? 2 : decayExponent);
+
+	  auto gammaL = light.gammaL();
+
+	  if (ImGui::SliderFloat("Cone Angle",
+		  &gammaL,
+		  MIN_ANGLE_SPOT_LIGHT,
+		  MAX_ANGLE_SPOT_LIGHT,
+		  "%.0f deg",
+		  1.0f))
+		  light.gammaL(gammaL <= MIN_ANGLE_SPOT_LIGHT ? MIN_ANGLE_SPOT_LIGHT : gammaL);
+  }
 }
 
 void

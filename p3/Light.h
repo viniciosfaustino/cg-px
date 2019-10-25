@@ -73,22 +73,22 @@ public:
     _type = type;
   }
 
-  char fl()
+  int fl()
   {
 	  return _fl;
   }
 
-  void fl(char fL)
+  void fl(int fL)
   {
 	  _fl = fL;
   }
 
-  char gammaL()
+  float gammaL()
   {
 	  return _gammaL;
   }
 
-  void gammaL(char gL)
+  void gammaL(float gL)
   {
 	  _gammaL = gL;
   }
@@ -105,8 +105,8 @@ public:
 
 private:
   Type _type;
-  char _fl; //falloff
-  char _gammaL; // angulo entre eixo do cone e qualquer de suas geratrizes
+  int _fl; //falloff
+  float _gammaL; // angulo entre eixo do cone e qualquer de suas geratrizes
   int _decayExponent;// expoente de decaimento
 
 }; // Light
