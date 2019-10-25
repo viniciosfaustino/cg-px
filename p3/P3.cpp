@@ -916,7 +916,16 @@ P3::preview() {
 inline void
 P3::drawLight(Light& light)
 {
-  // TODO
+	if (light.type() == Light::Type::Point)
+	{
+		SceneObject* obj = light.sceneObject();
+		vec3f localPos = obj->transform()->localPosition();
+		mat4f locToWorld = obj->transform()->localToWorldMatrix();
+		vec3f worldPos = locToWorld.transform(localPos);
+
+
+
+	}
 }
 
 inline void
