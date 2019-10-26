@@ -385,13 +385,10 @@ P3::inspectLight(Light& light)
 
 	  auto gammaL = light.gammaL();
 
-	  if (ImGui::SliderFloat("Cone Angle",
-		  &gammaL,
-		  MIN_ANGLE_SPOT_LIGHT,
-		  MAX_ANGLE_SPOT_LIGHT,
-		  "%.0f deg",
-		  1.0f))
-		  light.gammaL(gammaL <= MIN_ANGLE_SPOT_LIGHT ? MIN_ANGLE_SPOT_LIGHT : gammaL);
+    if (ImGui::DragFloat("Cone Angle", &gammaL, 0.3f, 0.0f, 90.0f))
+    {
+      light.setGammaL(gammaL);
+    }    
   }
 }
 
@@ -517,7 +514,7 @@ P3::addComponentButton(SceneObject& object)
 				
 				l->setType(cg::Light::Type::Point);
 				l->fl(0);
-				l->gammaL(45);
+				l->setGammaL(45);
 				l->decayExponent(0);
 				object.addComponent(l);
 				
@@ -528,7 +525,7 @@ P3::addComponentButton(SceneObject& object)
 			{
 				l->setType(cg::Light::Type::Directional);
 				l->fl(0);
-				l->gammaL(45);
+				l->setGammaL(45);
 				l->decayExponent(0);
 				object.addComponent(l);
 				
@@ -537,7 +534,7 @@ P3::addComponentButton(SceneObject& object)
 			{
 				l->setType(cg::Light::Type::Spot);
 				l->fl(0);
-				l->gammaL(45);
+				l->setGammaL(45);
 				l->decayExponent(0);
 				object.addComponent(l);
 		
@@ -869,7 +866,8 @@ P3::drawPrimitive(Primitive& primitive)
 
   auto t = primitive.transform();
   auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
-
+  _program.setUniform("material.ambient", primitive.material.ambient);
+  _program.setUniform("material.diffuse", primitive.material.diffuse);
   _program.setUniformMat4("transform", t->localToWorldMatrix());
   _program.setUniformMat3("normalMatrix", normalMatrix);
   _program.setUniformVec4("color", primitive.material.diffuse);

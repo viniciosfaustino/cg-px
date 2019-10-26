@@ -33,6 +33,8 @@
 #ifndef __Light_h
 #define __Light_h
 
+#define MIN_ANGLE_SPOT_LIGHT 10;
+
 #include "Component.h"
 #include "graphics/Color.h"
 
@@ -47,6 +49,7 @@ namespace cg
 class Light: public Component
 {
 public:
+  
   enum Type
   {
     Directional,
@@ -88,7 +91,7 @@ public:
 	  return _gammaL;
   }
 
-  void gammaL(float gL)
+  void setGammaL(float gL)
   {
 	  _gammaL = gL;
   }
