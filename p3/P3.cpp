@@ -866,12 +866,18 @@ P3::drawPrimitive(Primitive& primitive)
 
   auto t = primitive.transform();
   auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
-  _program.setUniform("material.ambient", primitive.material.ambient);
-  _program.setUniform("material.diffuse", primitive.material.diffuse);
+  
+  _program.setUniformVec4("material.ambient", primitive.material.ambient);
+  _program.setUniformVec4("material.diffuse", primitive.material.diffuse);
+  _program.setUniformVec4("material.spot", primitive.material.spot);
+  
+  //aqui tem que inicializar todas as entradas dos shaders
   _program.setUniformMat4("transform", t->localToWorldMatrix());
   _program.setUniformMat3("normalMatrix", normalMatrix);
   _program.setUniformVec4("color", primitive.material.diffuse);
   _program.setUniform("flatMode", (int)0);
+  
+  
   m->bind();
   drawMesh(m, GL_FILL);
   if (primitive.sceneObject() != _current)
