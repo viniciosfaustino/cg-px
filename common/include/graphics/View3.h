@@ -45,8 +45,6 @@ namespace cg
 #define MIN_DISTANCE    0.01f
 #define MIN_ANGLE       1.0f
 #define MAX_ANGLE       179.0f
-#define MIN_ANGLE_SPOT_LIGHT 1.0f
-#define MAX_ANGLE_SPOT_LIGHT 90.0f
 #define MIN_DEPTH       0.01f
 #define MIN_FRONT_PLANE 0.01f
 
