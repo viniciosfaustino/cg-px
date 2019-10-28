@@ -487,16 +487,14 @@ P3::addComponentButton(SceneObject& object)
         if (ImGui::MenuItem("Box"))
         {
           auto p = makePrimitive(_defaultMeshes.find("Box"));
-          object.addComponent(p);
-          _scene->addScenePrimitive(p);
+          object.addComponent(p);          
           object.setPrimitive((Reference<Primitive>)p);
         }
 
         if (ImGui::MenuItem("Sphere"))
         {
           auto p = makePrimitive(_defaultMeshes.find("Sphere"));
-          object.addComponent(p);
-          _scene->addScenePrimitive(p);
+          object.addComponent(p);          
           object.setPrimitive((Reference<Primitive>)p);
         }
       }
@@ -516,8 +514,7 @@ P3::addComponentButton(SceneObject& object)
           l->fl(0);
           l->setGammaL(45);
           l->decayExponent(0);
-          object.addComponent(l);
-          _scene->addSceneLight(l);
+          object.addComponent(l);         
         }
         if (ImGui::MenuItem("Directional"))
         {
@@ -525,8 +522,7 @@ P3::addComponentButton(SceneObject& object)
           l->fl(0);
           l->setGammaL(45);
           l->decayExponent(0);
-          object.addComponent(l);
-          _scene->addSceneLight(l);
+          object.addComponent(l);          
         }
         if (ImGui::MenuItem("Spot"))
         {
@@ -534,8 +530,7 @@ P3::addComponentButton(SceneObject& object)
           l->fl(0);
           l->setGammaL(45);
           l->decayExponent(0);
-          object.addComponent(l);
-          _scene->addSceneLight(l);
+          object.addComponent(l);          
         }
         
       }
