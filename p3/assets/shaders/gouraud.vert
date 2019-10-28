@@ -12,26 +12,24 @@ struct Light
   int type;
   int fl;
   float gammaL;
-  int decayExponent;
-  int openingAngle;
+  int decayExponent;  
   vec3 lightPosition;
   vec4 lightColor;
   vec3 direction;
 
 };
 
-uniform Material material;
-uniform Light lights[10];
-uniform int numLights;
+uniform Material material; //ok
+uniform Light lights[10]; //TODO DENTRO DO P3
+uniform int numLights; //ok mas tem que trocar o valor
 
 
-uniform mat4 transform;
-uniform mat3 normalMatrix;
-uniform mat4 vpMatrix = mat4(1);
-uniform vec4 color;
-uniform vec3 camPos;
-uniform vec4 ambientLight = vec4(0.2, 0.2, 0.2, 1); 
-uniform int flatMode;
+uniform mat4 transform; //ok
+uniform mat3 normalMatrix; //ok
+uniform mat4 vpMatrix = mat4(1); //ok
+uniform vec3 camPos; //ok
+uniform vec4 ambientLight;  //ok
+uniform int flatMode; //ok
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
@@ -55,12 +53,11 @@ void main()
   vec3 L = normalize(lights[0].lightPosition - vec3(P));
   vec3 N = normalize(normalMatrix * normal);
   vec4 A = ambientLight * float(1 - flatMode); //Ia
-
-  gl_Position = vpMatrix * P;
-  //vertexColor = A + color * lights[0].lightColor * max(dot(N, L), float(flatMode));
+  
   vec4 OaIa;
   vec4 OdIl;
   vec4 OsIl;
+  vec3 V = vec3(P) - camPos;
 
   vec3 Ll;
   vec3 Rl;
@@ -97,13 +94,16 @@ void main()
         Il = gammaL >= phiL ? lights[i].lightColor/pow(dl,lights[i].fl)*cos(phiL) : vec4(0);        
         break;
     }
-    OdIl = elementwiseMult(material.diffuse, Il);
+
+    OdIl = elementwiseMult(material.diffuse, Il);    
     OsIl = elementwiseMult(material.spot, Il);
     Rl = Ll - 2*(dot(N,Ll))*N;
-    I += OdIl*(dot(N,Ll)) + OsIl *(dot(-Rl, camPos));
+    I += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(-Rl,V), 0),1 - float(flatMode)), material.shine);
 
   }//end for
 
+  gl_Position = vpMatrix * P;
   vertexColor = I;
+
 }//end main
 

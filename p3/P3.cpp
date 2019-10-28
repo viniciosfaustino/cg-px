@@ -48,7 +48,7 @@ P3::buildScene()
 void
 P3::initialize()
 {
-  Application::loadShaders(_program, "shaders/p3.vs", "shaders/p3.fs");
+  Application::loadShaders(_program, "shaders/gouraud.vert", "shaders/p3.frag");
   Assets::initialize();
   buildDefaultMeshes();
   buildScene();
@@ -517,8 +517,7 @@ P3::addComponentButton(SceneObject& object)
 				l->setGammaL(45);
 				l->decayExponent(0);
 				object.addComponent(l);
-				
-				
+        _scene->addSceneLight(l);				
 
 			}
 			if (ImGui::MenuItem("Directional"))
@@ -538,11 +537,7 @@ P3::addComponentButton(SceneObject& object)
 				l->decayExponent(0);
 				object.addComponent(l);
 		
-			}
-
-			
-
-			
+			}			
 		}
 		ImGui::EndMenu();
 	}
@@ -564,9 +559,7 @@ P3::sceneObjectGui()
   ImGui::Separator();
   if (ImGui::CollapsingHeader(object->transform()->typeName()))
     ImGui::TransformEdit(object->transform());
-
-  // **Begin inspection of temporary components
-  // It should be replaced by your component inspection
+  
   auto it = object->getComponentsIterator();
   auto itEnd = object->getComponentsEnd();
   auto size = object->componentsSize();
@@ -619,14 +612,9 @@ P3::sceneObjectGui()
 			sceneObject->setLight(nullptr);
 		}
 		else if (open)
-		{
-			//auto isCurrent = l == Light::current();
-
-			//ImGui::Checkbox("Current", &isCurrent);
-			//Camera::setCurrent(isCurrent ? l : nullptr);
+		{			
 			inspectLight(*l);
 		}
-
 
 	}
     if (size != object->componentsSize())
@@ -634,8 +622,6 @@ P3::sceneObjectGui()
       break;
     }    
   }
-
-
   // **End inspection of temporary components
 }
 
@@ -870,12 +856,33 @@ P3::drawPrimitive(Primitive& primitive)
   _program.setUniformVec4("material.ambient", primitive.material.ambient);
   _program.setUniformVec4("material.diffuse", primitive.material.diffuse);
   _program.setUniformVec4("material.spot", primitive.material.spot);
-  
-  //aqui tem que inicializar todas as entradas dos shaders
+  _program.setUniformVec4("material.shine", primitive.material.shine);
+    
+  auto it = _scene->getSceneLightsIterator();
+  auto end = _scene->getSceneLightsEnd();
+  int cont = 0;
+  int size = std::min(_scene->getSceneLightsCounter(), 10);
+  std::string attr;
+  for (;it != end && cont < size; it++)
+  {
+    attr = "lights[" + std::to_string(cont) + "].";
+    _program.setUniform((attr+ "type").c_str(), it->get()->type());
+    _program.setUniform((attr + "fl").c_str(), it->get()->fl());
+    _program.setUniform((attr + "gammaL").c_str(), it->get()->gammaL());
+    _program.setUniform((attr + "decayExponent").c_str(), it->get()->decayExponent());
+    _program.setUniformVec3((attr + "lightPosition").c_str(), it->get()->sceneObject()->transform()->position());
+    _program.setUniformVec4((attr + "lightColor").c_str(), it->get()->color);
+    _program.setUniformVec3((attr + "direction").c_str(), it->get()->sceneObject()->transform()->rotation()*(0,1,0));
+      
+    cont++;
+  }
+
+  _program.setUniform("numLights", (int)0);
   _program.setUniformMat4("transform", t->localToWorldMatrix());
   _program.setUniformMat3("normalMatrix", normalMatrix);
-  _program.setUniformVec4("color", primitive.material.diffuse);
+  _program.setUniformVec4("ambientLight", _scene->ambientLight);
   _program.setUniform("flatMode", (int)0);
+  _program.setUniformVec3("camPos", Camera::current);
   
   
   m->bind();
@@ -1094,7 +1101,7 @@ P3::render()
 
   _program.setUniformMat4("vpMatrix", vp);
   _program.setUniformVec4("ambientLight", _scene->ambientLight);
-  _program.setUniformVec3("lightPosition", p);
+  //_program.setUniformVec3("lightPosition", p);
 
   auto it = _scene->getScenePrimitiveIterator();
   auto end = _scene->getScenePrimitiveEnd();

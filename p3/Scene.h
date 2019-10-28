@@ -50,6 +50,7 @@ class Scene: public SceneNode
 private:
   Reference<SceneObject> _root;
   std::vector  <Reference<Component>>  _scenePrimitives;
+  std::vector  <Reference<Light>>  _sceneLights;
   friend class SceneObject;
 
 public:
@@ -78,6 +79,11 @@ public:
     _scenePrimitives.push_back(primitive);
   }
 
+  void addSceneLight(Reference<Light> light)
+  {
+    _sceneLights.push_back(light);
+  }
+
   void removeScenePrimitive(Reference<Component> primitive)
   {
     auto it = _scenePrimitives.begin();
@@ -97,16 +103,48 @@ public:
     }
   }
 
+  void removeSceneLight(Reference<Light> light)
+  {
+    auto it = _sceneLights.begin();
+    auto end = _sceneLights.end();
+    bool found = false;
+    while (!found && it != end)
+    {
+      if (it->get() == light)
+      {
+        _sceneLights.erase(it);
+        found = true;
+      }
+      else
+      {
+        it++;
+      }
+    }
+  }
+
   auto getScenePrimitiveIterator()
   {
-
     return  this->_scenePrimitives.begin();
-
   }
 
   auto getScenePrimitiveEnd()
   {
     return this->_scenePrimitives.end();
+  }
+
+  auto getSceneLightsIterator()
+  {
+    return  this->_sceneLights.begin();
+  }
+
+  auto getSceneLightsEnd()
+  {
+    return this->_sceneLights.end();
+  }
+
+  int getSceneLightsCounter()
+  {
+    return this->_sceneLights.size();
   }
   
 }; // Scene
