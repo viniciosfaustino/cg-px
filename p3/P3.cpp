@@ -361,34 +361,34 @@ P3::inspectLight(Light& light)
   ImGui::ColorEdit3("Color", light.color);
   if (light.type() == Light::Type::Point)
   {
-	  auto falloff = light.fl();
-	  if (ImGui::SliderInt("Falloff",
-		  &falloff,
-		  0,
-		  2
-		  ))
-	
+    auto falloff = light.fl();
+    if (ImGui::SliderInt("Falloff",
+      &falloff,
+      0,
+      2
+    ))
+
       light.fl(falloff < 0 ? 0 : falloff);
-	  light.fl(falloff > 2 ? 2 : falloff);
+    light.fl(falloff > 2 ? 2 : falloff);
   }
   else if (light.type() == Light::Type::Spot)
   {
-	  auto decayExponent = light.decayExponent();
-	  if (ImGui::SliderInt("Decay Exponent",
-		  &decayExponent,
-		  0,
-		  2
-	  ))
+    auto decayExponent = light.decayExponent();
+    if (ImGui::SliderInt("Decay Exponent",
+      &decayExponent,
+      0,
+      2
+    ))
 
       light.decayExponent(decayExponent < 0 ? 0 : decayExponent);
-	  light.decayExponent(decayExponent > 2 ? 2 : decayExponent);
+    light.decayExponent(decayExponent > 2 ? 2 : decayExponent);
 
-	  auto gammaL = light.gammaL();
+    auto gammaL = light.gammaL();
 
     if (ImGui::DragFloat("Cone Angle", &gammaL, 0.3f, 0.0f, 90.0f))
     {
       light.setGammaL(gammaL);
-    }    
+    }
   }
 }
 
@@ -503,44 +503,44 @@ P3::addComponentButton(SceneObject& object)
 
       ImGui::EndMenu();
     }
-	if(ImGui::BeginMenu("Light"))
-	{
-		if (!object.light())
-		{
-			Reference<Light> l = new Light();
+    if (ImGui::BeginMenu("Light"))
+    {
+      if (!object.light())
+      {
+        Reference<Light> l = new Light();
 
-			if (ImGui::MenuItem("Point"))
-			{
-				
-				l->setType(cg::Light::Type::Point);
-				l->fl(0);
-				l->setGammaL(45);
-				l->decayExponent(0);
-				object.addComponent(l);
-        _scene->addSceneLight(l);				
+        if (ImGui::MenuItem("Point"))
+        {
 
-			}
-			if (ImGui::MenuItem("Directional"))
-			{
-				l->setType(cg::Light::Type::Directional);
-				l->fl(0);
-				l->setGammaL(45);
-				l->decayExponent(0);
-				object.addComponent(l);
-				
-			}
-			if (ImGui::MenuItem("Spot"))
-			{
-				l->setType(cg::Light::Type::Spot);
-				l->fl(0);
-				l->setGammaL(45);
-				l->decayExponent(0);
-				object.addComponent(l);
-		
-			}			
-		}
-		ImGui::EndMenu();
-	}
+          l->setType(cg::Light::Type::Point);
+          l->fl(0);
+          l->setGammaL(45);
+          l->decayExponent(0);
+          object.addComponent(l);
+          _scene->addSceneLight(l);
+        }
+        if (ImGui::MenuItem("Directional"))
+        {
+          l->setType(cg::Light::Type::Directional);
+          l->fl(0);
+          l->setGammaL(45);
+          l->decayExponent(0);
+          object.addComponent(l);
+          _scene->addSceneLight(l);
+        }
+        if (ImGui::MenuItem("Spot"))
+        {
+          l->setType(cg::Light::Type::Spot);
+          l->fl(0);
+          l->setGammaL(45);
+          l->decayExponent(0);
+          object.addComponent(l);
+          _scene->addSceneLight(l);
+        }
+        
+      }
+      ImGui::EndMenu();
+    }
     ImGui::EndPopup();
   }
   ImGui::Separator();
@@ -559,12 +559,12 @@ P3::sceneObjectGui()
   ImGui::Separator();
   if (ImGui::CollapsingHeader(object->transform()->typeName()))
     ImGui::TransformEdit(object->transform());
-  
+
   auto it = object->getComponentsIterator();
   auto itEnd = object->getComponentsEnd();
   auto size = object->componentsSize();
-  for (;it != itEnd; it++)
-    {    
+  for (; it != itEnd; it++)
+  {
     auto component = it->get();
     if (auto p = dynamic_cast<Primitive*>(component))
     {
@@ -599,28 +599,28 @@ P3::sceneObjectGui()
         Camera::setCurrent(isCurrent ? c : nullptr);
         inspectCamera(*c);
       }
-    } 
-	else if (auto l = dynamic_cast<Light*>(component))
-	{
-		auto notDelete{ true };
-		auto open = ImGui::CollapsingHeader(l->typeName(), &notDelete);
+    }
+    else if (auto l = dynamic_cast<Light*>(component))
+    {
+      auto notDelete{ true };
+      auto open = ImGui::CollapsingHeader(l->typeName(), &notDelete);
 
-		if (!notDelete)
-		{
-			auto sceneObject = l->sceneObject();
-			sceneObject->removeComponent(dynamic_cast<Component*>(l));
-			sceneObject->setLight(nullptr);
-		}
-		else if (open)
-		{			
-			inspectLight(*l);
-		}
+      if (!notDelete)
+      {
+        auto sceneObject = l->sceneObject();
+        sceneObject->removeComponent(dynamic_cast<Component*>(l));
+        sceneObject->setLight(nullptr);
+      }
+      else if (open)
+      {
+        inspectLight(*l);
+      }
 
-	}
+    }
     if (size != object->componentsSize())
     {
       break;
-    }    
+    }
   }
   // **End inspection of temporary components
 }
@@ -852,28 +852,28 @@ P3::drawPrimitive(Primitive& primitive)
 
   auto t = primitive.transform();
   auto normalMatrix = mat3f{ t->worldToLocalMatrix() }.transposed();
-  
+
   _program.setUniformVec4("material.ambient", primitive.material.ambient);
   _program.setUniformVec4("material.diffuse", primitive.material.diffuse);
   _program.setUniformVec4("material.spot", primitive.material.spot);
   _program.setUniformVec4("material.shine", primitive.material.shine);
-    
+
   auto it = _scene->getSceneLightsIterator();
   auto end = _scene->getSceneLightsEnd();
   int cont = 0;
   int size = std::min(_scene->getSceneLightsCounter(), 10);
   std::string attr;
-  for (;it != end && cont < size; it++)
+  for (; it != end && cont < size; it++)
   {
     attr = "lights[" + std::to_string(cont) + "].";
-    _program.setUniform((attr+ "type").c_str(), it->get()->type());
+    _program.setUniform((attr + "type").c_str(), it->get()->type());
     _program.setUniform((attr + "fl").c_str(), it->get()->fl());
     _program.setUniform((attr + "gammaL").c_str(), it->get()->gammaL());
     _program.setUniform((attr + "decayExponent").c_str(), it->get()->decayExponent());
     _program.setUniformVec3((attr + "lightPosition").c_str(), it->get()->sceneObject()->transform()->position());
     _program.setUniformVec4((attr + "lightColor").c_str(), it->get()->color);
-    _program.setUniformVec3((attr + "direction").c_str(), it->get()->sceneObject()->transform()->rotation()*(0,1,0));
-      
+    _program.setUniformVec3((attr + "direction").c_str(), it->get()->sceneObject()->transform()->rotation() * (0, 1, 0));
+
     cont++;
   }
 
@@ -883,13 +883,13 @@ P3::drawPrimitive(Primitive& primitive)
   _program.setUniformVec4("ambientLight", _scene->ambientLight);
   _program.setUniform("flatMode", (int)0);
   _program.setUniformVec3("camPos", Camera::current);
-  
-  
+
+
   m->bind();
   drawMesh(m, GL_FILL);
   if (primitive.sceneObject() != _current)
     return;
-  _program.setUniformVec4("color", _selectedWireframeColor);
+  //_program.setUniformVec4("color", _selectedWireframeColor);
   _program.setUniform("flatMode", (int)1);
   drawMesh(m, GL_LINE);
 }
@@ -927,16 +927,16 @@ P3::preview() {
 inline void
 P3::drawLight(Light& light)
 {
-	if (light.type() == Light::Type::Point)
-	{
-		SceneObject* obj = light.sceneObject();
-		vec3f localPos = obj->transform()->localPosition();
-		mat4f locToWorld = obj->transform()->localToWorldMatrix();
-		vec3f worldPos = locToWorld.transform(localPos);
+  if (light.type() == Light::Type::Point)
+  {
+    SceneObject* obj = light.sceneObject();
+    vec3f localPos = obj->transform()->localPosition();
+    mat4f locToWorld = obj->transform()->localToWorldMatrix();
+    vec3f worldPos = locToWorld.transform(localPos);
 
 
 
-	}
+  }
 }
 
 inline void
