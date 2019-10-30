@@ -71,7 +71,8 @@ namespace cg
     program->setUniformMat4("transform", t->localToWorldMatrix());
     program->setUniformMat3("normalMatrix", normalMatrix);
     // sapega vai dar ruim
-    program->setUniformVec4("color", primitive.material.ambient);
+    //deu mesmo
+    //program->setUniformVec4("color", primitive.material.ambient);
     program->setUniform("flatMode", (int)0);
     m->bind();
     drawMesh(m, GL_FILL);
@@ -123,7 +124,7 @@ namespace cg
     auto program = getProgram();
     program->setUniformMat4("vpMatrix", vp);
     program->setUniformVec4("ambientLight", _scene->ambientLight);
-    program->setUniformVec3("lightPosition", p);
+    //program->setUniformVec3("lightPosition", p);
     //as ultimas tres linhas servem para alterar as posições da camera no arquivo que é executado pela gpu
 
     renderRecursive(_scene->root());

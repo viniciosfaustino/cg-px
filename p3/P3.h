@@ -17,13 +17,15 @@ class P3: public GLWindow
 public:
   P3(int width, int height):
     GLWindow{"cg2019 - P3", width, height},
-    _program{"P3"}
+    _programG{"P3"},
+    _programP{ "P3"}
   {
     // do nothing
   }
 
   /// Initialize the app.
   void initialize() override;
+
   void recursionTree(bool open, Reference<SceneObject> object)
   {
     if (open)
@@ -68,9 +70,7 @@ public:
 
       ImGui::TreePop(); //serve pra mostrar efetivamente o role
     }
-  }
-
-  void createNewObject(bool empty, std::string shape);
+  }  
 
   void removeObject(Reference<SceneObject> object);
 
@@ -99,13 +99,23 @@ private:
     Down = 32
   };
 
+  enum class SceneObjectType
+  {
+    empty,
+    shape,
+    camera,
+    spot,
+    point,
+    directional
+  };
+
   enum class DragBits
   {
     Rotate = 1,
     Pan = 2
   };
 
-  GLSL::Program _program;
+  GLSL::Program _programG, _programP;
   Reference<Scene> _scene;
   Reference<SceneEditor> _editor;
   Reference<GLRenderer> _renderer;
@@ -134,6 +144,8 @@ private:
   void mainMenu();
   void fileMenu();
   void showOptions();
+
+  void createNewObject(SceneObjectType type, std::string shape);
 
   void hierarchyWindow();
   void inspectorWindow();

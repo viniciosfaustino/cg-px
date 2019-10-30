@@ -139,16 +139,20 @@ namespace cg
   {
     if (auto c = dynamic_cast<Camera*>(component))
     {
+      setCamera(c);
       _scene->addScenePrimitive(c);
       
     }
     if (auto l = dynamic_cast<Light*>(component))
     {
+      setLight(l);
       _scene->addSceneLight(l);
+      _scene->addScenePrimitive(l);
     }
     if (auto p = dynamic_cast<Primitive*>(component))
     {
       _scene->addScenePrimitive(p);
+      setPrimitive(p);
     }
     component->_sceneObject = this;
     _components.push_back(component);
