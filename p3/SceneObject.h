@@ -72,7 +72,7 @@ public:
     makeUse(&_transform);
     _camera = nullptr;
     _primitive = nullptr;
-	_light = nullptr;
+	  _light = nullptr;
   }
 
   /// Returns the scene which this scene object belong to.
