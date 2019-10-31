@@ -78,7 +78,7 @@ void main()
     {
       case 0: //directional
         Il = Cl;
-        Ll = lights[i].direction;
+        Ll = normalize(lights[i].direction);
         break;
         
       case 1: //point
@@ -88,17 +88,17 @@ void main()
         break;
         
       case 2: //spot
-        gammaL = radians(float(lights[i].gammaL));                
-        phiL = dot(lights[i].direction, Ll);
+        gammaL = radians(float(lights[i].gammaL));
         Ll = normalize(lights[i].lightPosition - vec3(P)); //aqui ja ta invertido o lL
-        Il = gammaL >= phiL ? lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[0].decayExponent) : vec4(0);        
+        phiL = dot(lights[i].direction, -Ll);        
+        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[0].decayExponent);        
         break;
     }
 
     OdIl = elementwiseMult(material.diffuse, Il);    
     OsIl = elementwiseMult(material.spot, Il);
-    Rl = Ll - 2*(dot(N,Ll))*N;
-    I += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(-Rl,V), 0),1 - float(flatMode)), material.shine);
+    Rl = reflect(Ll, N);
+    I += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(Rl,V), 0),1 - float(flatMode)), material.shine);
 
   }//end for
 

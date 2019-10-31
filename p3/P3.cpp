@@ -127,6 +127,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
     child = new SceneObject{ name.c_str(), _scene };
     l = createLight(cg::Light::Type::Spot);
     child->addComponent(l);
+    lightCounter++;
     break;
 
   case P3::SceneObjectType::point:
@@ -134,6 +135,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
     child = new SceneObject{ name.c_str(), _scene };
     l = createLight(cg::Light::Type::Point);    
     child->addComponent(l);
+    lightCounter++;
     break;
 
   case P3::SceneObjectType::directional:
@@ -141,6 +143,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
     child = new SceneObject{ name.c_str(), _scene };
     l = createLight(cg::Light::Type::Directional);    
     child->addComponent(l);
+    lightCounter++;
     break;
   }
 
@@ -923,13 +926,13 @@ P3::drawPrimitive(Primitive& primitive)
   _programG.setUniformVec4("material.ambient", primitive.material.ambient);
   _programG.setUniformVec4("material.diffuse", primitive.material.diffuse);
   _programG.setUniformVec4("material.spot", primitive.material.spot);
-  _programG.setUniformVec4("material.shine", primitive.material.shine);
+  _programG.setUniform("material.shine", primitive.material.shine);
  
   _programG.setUniformMat4("transform", t->localToWorldMatrix());
   _programG.setUniformMat3("normalMatrix", normalMatrix);
   _programG.setUniformVec4("ambientLight", _scene->ambientLight);
   _programG.setUniform("flatMode", (int)0);
-  _programG.setUniformVec3("camPos", Camera::current);
+  /*_programG.setUniformVec3("camPos", Camera::current);*/
 
 
   m->bind();
@@ -1148,6 +1151,7 @@ P3::render()
 
   _programG.setUniformMat4("vpMatrix", vp);
   _programG.setUniformVec4("ambientLight", _scene->ambientLight);
+  _programG.setUniformVec3("camPos", ec->transform()->position());
   //_programG.setUniformVec3("lightPosition", p);
 
   auto lit = _scene->getSceneLightsIterator();
@@ -1164,7 +1168,7 @@ P3::render()
     _programG.setUniform((attr + "decayExponent").c_str(), lit->get()->decayExponent());
     _programG.setUniformVec3((attr + "lightPosition").c_str(), lit->get()->sceneObject()->transform()->position());
     _programG.setUniformVec4((attr + "lightColor").c_str(), lit->get()->color);
-    _programG.setUniformVec3((attr + "direction").c_str(), lit->get()->sceneObject()->transform()->rotation() * (0, 1, 0));
+    _programG.setUniformVec3((attr + "direction").c_str(), lit->get()->sceneObject()->transform()->rotation() * vec3f(0, -1, 0));
 
     cont++;
   }
@@ -1203,7 +1207,6 @@ P3::render()
   {
     preview();
   }
-
 
 }
 
