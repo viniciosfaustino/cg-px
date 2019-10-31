@@ -976,20 +976,77 @@ P3::drawLight(Light& light)
 {
   SceneObject* obj = light.sceneObject();
   vec3f pos = obj->transform()->position();
+  _editor->setVectorColor(light.color);
+
+  vec3f dirPoints1 = {-0.5,0,-0.5};
+  vec3f dirPoints2 = {-0.5,0,0.5};
+  vec3f dirPoints3 = {0.5,0,0.5};
+  vec3f dirPoints4 = {0.5,0,-0.5};
+  
+  vec3f normalx = { 1,0,0 };
+  vec3f normaly = { 0,1,0 };
+  vec3f normalz = { 0,0,1 };
+
   if (light.type() == Light::Type::Point)
   {
-  
-	vec3f normal = { 0,-1,0 };
-	_editor->drawVector(pos, normal, 10);
+	  _editor->drawVector(pos, normalx * -1, 1.2);
+	  _editor->drawVector(pos, normalx, 1.2);
+	  _editor->drawVector(pos, normaly * -1, 1.2);
+	  _editor->drawVector(pos, normaly, 1.2);
+	  _editor->drawVector(pos, normalz * -1, 1.2);
+	  _editor->drawVector(pos, normalz, 1.2);
 
+	  _editor->drawVector(pos, (normalx + normaly)*0.5, 0.6);
+	  _editor->drawVector(pos, (normalx + normalz)*0.5, 0.6);
+	  _editor->drawVector(pos, (normaly + normalz)*0.5, 0.6);
+	  _editor->drawVector(pos, (normalx + normaly)* -0.5, 0.6);
+	  _editor->drawVector(pos, (normalx + normalz)* -0.5, 0.6);
+	  _editor->drawVector(pos, (normaly + normalz)* -0.5, 0.6);
+
+	  _editor->drawVector(pos, (normalx + normaly * -1) * 0.5, 0.6);
+	  _editor->drawVector(pos, (normalx + normalz * -1) * 0.5, 0.6);
+	  _editor->drawVector(pos, (normaly + normalz * -1) * 0.5, 0.6);
+
+	  _editor->drawVector(pos, (normalx * -1 + normaly) * 0.5, 0.6);
+	  _editor->drawVector(pos, (normalx * -1 + normalz) * 0.5, 0.6);
+	  _editor->drawVector(pos, (normaly * -1 + normalz) * 0.5, 0.6);
   }
   if (light.type() == Light::Type::Directional)
   {
-	  
-
+	  _editor->drawVector(pos, normaly*-1, 6.5);
+	  _editor->drawVector(pos + dirPoints1, normaly*-1, 6);
+	  _editor->drawVector(pos + dirPoints2, normaly*-1, 6);
+	  _editor->drawVector(pos + dirPoints3, normaly*-1, 6);
+	  _editor->drawVector(pos + dirPoints4, normaly*-1, 6);
   }
   if (light.type() == Light::Type::Spot)
   {
+	  float coneHeight = 5.0f;
+
+	  float hip = coneHeight / std::cos(math::toRadians(light.gammaL()));
+
+	  float co = std::sin(math::toRadians(light.gammaL())) * hip;
+
+	  vec3f px = pos + (normaly * -5) + (normalx * co);
+	  vec3f pz = pos + (normaly * -5) + (normalz * co);
+	  vec3f pmx = pos + (normaly * -5) + (normalx * co * -1);
+	  vec3f pmz = pos + (normaly * -5) + (normalz * co * -1);
+
+	  _editor->drawVector(pos, pos - px, 1);
+	  _editor->drawVector(pos, pos - pz, 1);
+	  _editor->drawVector(pos, pos - pmx, 1);
+	  _editor->drawVector(pos, pos - pmz, 1);
+
+	  _editor->drawVector(pos, (pos - px + pos - pz)*0.5, 1);
+	  _editor->drawVector(pos, pos - pmx, 1);
+	  _editor->drawVector(pos, pos - pmz, 1);
+	  
+
+	  
+	
+
+	  
+
 
 
   }
