@@ -974,13 +974,22 @@ P3::preview() {
 inline void
 P3::drawLight(Light& light)
 {
+  SceneObject* obj = light.sceneObject();
+  vec3f pos = obj->transform()->position();
   if (light.type() == Light::Type::Point)
   {
-    SceneObject* obj = light.sceneObject();
-    vec3f localPos = obj->transform()->localPosition();
-    mat4f locToWorld = obj->transform()->localToWorldMatrix();
-    vec3f worldPos = locToWorld.transform(localPos);
+  
+	vec3f normal = { 0,-1,0 };
+	_editor->drawVector(pos, normal, 10);
 
+  }
+  if (light.type() == Light::Type::Directional)
+  {
+	  
+
+  }
+  if (light.type() == Light::Type::Spot)
+  {
 
 
   }
@@ -1193,6 +1202,13 @@ P3::render()
       }
 
     }
+	if (auto l = dynamic_cast<Light*>(it->get()))
+	{
+		if (_current == o)
+		{
+			drawLight(*l);
+		}
+	}
     if (o == _current)
     {
       auto t = o->transform();
