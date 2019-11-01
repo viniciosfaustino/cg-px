@@ -90,12 +90,12 @@ void main()
       case 2: //spot
         gammaL = radians(float(lights[i].gammaL));
         Ll = normalize(lights[i].lightPosition - vec3(P)); //aqui ja ta invertido o lL
-        phiL = dot(lights[i].direction, -Ll);        
-        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[0].decayExponent);        
+        phiL = dot(lights[i].direction, -Ll);
+        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[0].decayExponent);
         break;
     }
 
-    OdIl = elementwiseMult(material.diffuse, Il);    
+    OdIl = elementwiseMult(material.diffuse, Il);
     OsIl = elementwiseMult(material.spot, Il);
     Rl = reflect(Ll, N);
     I += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(Rl,V), 0),1 - float(flatMode)), material.shine);
@@ -104,6 +104,5 @@ void main()
 
   gl_Position = vpMatrix * P;
   vertexColor = I;
-
 }//end main
 
