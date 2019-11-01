@@ -976,25 +976,26 @@ P3::drawLight(Light& light)
 {
   SceneObject* obj = light.sceneObject();
   vec3f pos = obj->transform()->position();
+  vec3f locPos = obj->transform()->localPosition();
+  mat4f ltw = obj->transform()->localToWorldMatrix();
   _editor->setVectorColor(light.color);
-
-  vec3f dirPoints1 = {-0.5,0,-0.5};
-  vec3f dirPoints2 = {-0.5,0,0.5};
-  vec3f dirPoints3 = {0.5,0,0.5};
-  vec3f dirPoints4 = {0.5,0,-0.5};
   
-  vec3f normalx = { 1,0,0 };
-  vec3f normaly = { 0,1,0 };
-  vec3f normalz = { 0,0,1 };
+  vec3f normalx = obj->transform()->right();
+  vec3f normaly = obj->transform()->up();
+  vec3f normalz = obj->transform()->forward();
+
+  //normalx = obj->transform()->worldToLocalMatrix().transposed().transform(normalx);
+  //normaly = obj->transform()->worldToLocalMatrix().transposed().transform(normaly);
+  //normalz = obj->transform()->worldToLocalMatrix().transposed().transform(normalz);
 
   if (light.type() == Light::Type::Point)
   {
-	  _editor->drawVector(pos, normalx * -1, 1.2);
-	  _editor->drawVector(pos, normalx, 1.2);
-	  _editor->drawVector(pos, normaly * -1, 1.2);
-	  _editor->drawVector(pos, normaly, 1.2);
-	  _editor->drawVector(pos, normalz * -1, 1.2);
-	  _editor->drawVector(pos, normalz, 1.2);
+	  _editor->drawVector(pos, normalx *-1, 1.2);
+	  _editor->drawVector(pos, normalx    , 1.2);
+	  _editor->drawVector(pos, normaly *-1, 1.2);
+	  _editor->drawVector(pos, normaly    , 1.2);
+	  _editor->drawVector(pos, normalz *-1, 1.2);
+	  _editor->drawVector(pos, normalz    , 1.2);
 
 	  _editor->drawVector(pos, (normalx + normaly)*0.5, 0.6);
 	  _editor->drawVector(pos, (normalx + normalz)*0.5, 0.6);
@@ -1013,11 +1014,16 @@ P3::drawLight(Light& light)
   }
   if (light.type() == Light::Type::Directional)
   {
-	  _editor->drawVector(pos, normaly*-1, 6.5);
-	  _editor->drawVector(pos + dirPoints1, normaly*-1, 6);
-	  _editor->drawVector(pos + dirPoints2, normaly*-1, 6);
-	  _editor->drawVector(pos + dirPoints3, normaly*-1, 6);
-	  _editor->drawVector(pos + dirPoints4, normaly*-1, 6);
+	  vec3f dirPoints1 = { -0.5,0,-0.5 };
+	  vec3f dirPoints2 = { -0.5,0,0.5 };
+	  vec3f dirPoints3 = { 0.5,0,0.5 };
+	  vec3f dirPoints4 = { 0.5,0,-0.5 };
+
+	  _editor->drawVector(ltw.transform(locPos), normaly*-1, 6.5);
+	  _editor->drawVector(ltw.transform(locPos + dirPoints1), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos + dirPoints2), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos + dirPoints3), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos + dirPoints4), normaly*-1, 6);
   }
   if (light.type() == Light::Type::Spot)
   {
@@ -1032,14 +1038,23 @@ P3::drawLight(Light& light)
 	  vec3f pmx = pos + (normaly * -5) + (normalx * co * -1);
 	  vec3f pmz = pos + (normaly * -5) + (normalz * co * -1);
 
-	  _editor->drawVector(pos, pos - px, 1);
-	  _editor->drawVector(pos, pos - pz, 1);
-	  _editor->drawVector(pos, pos - pmx, 1);
-	  _editor->drawVector(pos, pos - pmz, 1);
+	  //vec3f vecx = pos - px;
+	 // vec3f vecz = pos - pz;
+	 // vec3f vecmx = pos - pmx;
+	 // vec3f vecmz = pos - pmz;
 
-	  _editor->drawVector(pos, (pos - px + pos - pz)*0.5, 1);
-	  _editor->drawVector(pos, pos - pmx, 1);
-	  _editor->drawVector(pos, pos - pmz, 1);
+	  vec3f vecx = obj->transform()->transformVector(px - pos);
+	  vec3f vecz = obj->transform()->transformVector(pz - pos);
+	  vec3f vecmx = obj->transform()->transformVector(pmx - pos);
+	  vec3f vecmz = obj->transform()->transformVector(pmz - pos);
+
+	  _editor->drawVector(pos, vecx, 1);
+	  _editor->drawVector(pos, vecz, 1);
+	  _editor->drawVector(pos, vecmx, 1);
+	  _editor->drawVector(pos, vecmz, 1);
+
+	  _editor->drawCircle(pos + (normaly * -5), co, normaly);
+	 
 	  
 
 	  

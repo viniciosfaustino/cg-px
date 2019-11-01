@@ -157,7 +157,7 @@ public:
     return _rotation * vec3f::up();
   }
 
-  /// Returns the direction of the world Z axis of this transform.
+  /// Returns the direction of the world X axis of this transform.
   vec3f right() const
   {
     return _rotation * vec3f{1, 0, 0};
