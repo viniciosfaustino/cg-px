@@ -978,15 +978,16 @@ P3::drawLight(Light& light)
   vec3f pos = obj->transform()->position();
   vec3f locPos = obj->transform()->localPosition();
   mat4f ltw = obj->transform()->localToWorldMatrix();
+  mat4f wtl = obj->transform()->worldToLocalMatrix();
   _editor->setVectorColor(light.color);
   
-  vec3f normalx = obj->transform()->right();
-  vec3f normaly = obj->transform()->up();
-  vec3f normalz = obj->transform()->forward();
+  vec3f normalx = { 1,0,0 };
+  vec3f normaly = { 0,1,0 };
+  vec3f normalz = { 0,0,1 }; 
 
-  //normalx = obj->transform()->worldToLocalMatrix().transposed().transform(normalx);
-  //normaly = obj->transform()->worldToLocalMatrix().transposed().transform(normaly);
-  //normalz = obj->transform()->worldToLocalMatrix().transposed().transform(normalz);
+  normalx = ltw.transformVector(normalx);
+  normaly = ltw.transformVector(normaly);
+  normalz = ltw.transformVector(normalz);
 
   if (light.type() == Light::Type::Point)
   {
@@ -1019,11 +1020,16 @@ P3::drawLight(Light& light)
 	  vec3f dirPoints3 = { 0.5,0,0.5 };
 	  vec3f dirPoints4 = { 0.5,0,-0.5 };
 
+	  dirPoints1 = ltw.transform(dirPoints1);
+	  dirPoints1 = ltw.transform(dirPoints1);
+	  dirPoints1 = ltw.transform(dirPoints1);
+	  dirPoints1 = ltw.transform(dirPoints1);
+
 	  _editor->drawVector(ltw.transform(locPos), normaly*-1, 6.5);
-	  _editor->drawVector(ltw.transform(locPos + dirPoints1), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos + dirPoints2), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos + dirPoints3), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos + dirPoints4), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos+dirPoints1), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos+dirPoints2), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos+dirPoints3), normaly*-1, 6);
+	  _editor->drawVector(ltw.transform(locPos+dirPoints4), normaly*-1, 6);
   }
   if (light.type() == Light::Type::Spot)
   {
@@ -1053,7 +1059,8 @@ P3::drawLight(Light& light)
 	  _editor->drawVector(pos, vecmx, 1);
 	  _editor->drawVector(pos, vecmz, 1);
 
-	  _editor->drawCircle(pos + (normaly * -5), co, normaly);
+
+	  _editor->drawCircle(pos + (normaly * -5), co, wtl.transposed().transform(normaly));
 	 
 	  
 
