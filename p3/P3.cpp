@@ -92,7 +92,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
   }
   std::string typeName;
   Reference<SceneObject> child = nullptr;
-  Reference<Camera> c = nullptr;  
+  Reference<Camera> c = nullptr;
   Reference<Primitive> p1 = nullptr;
   Reference<Light> l = nullptr;
   switch (type)
@@ -110,7 +110,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
 
     p1 = makePrimitive(_defaultMeshes.find(shape));
 
-    child->addComponent(p1);    
+    child->addComponent(p1);
     child->setPrimitive((Reference<Primitive>)p1);
     break;
 
@@ -133,7 +133,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
   case P3::SceneObjectType::point:
     name = "Light " + std::to_string(lightCounter);
     child = new SceneObject{ name.c_str(), _scene };
-    l = createLight(cg::Light::Type::Point);    
+    l = createLight(cg::Light::Type::Point);
     child->addComponent(l);
     lightCounter++;
     break;
@@ -141,7 +141,7 @@ P3::createNewObject(SceneObjectType type, std::string shape)
   case P3::SceneObjectType::directional:
     name = "Light " + std::to_string(lightCounter);
     child = new SceneObject{ name.c_str(), _scene };
-    l = createLight(cg::Light::Type::Directional);    
+    l = createLight(cg::Light::Type::Directional);
     child->addComponent(l);
     lightCounter++;
     break;
@@ -239,7 +239,7 @@ P3::hierarchyWindow()
         createNewObject(P3::SceneObjectType::point, "");
       }
       if (ImGui::MenuItem("Spot"))
-      {        
+      {
         createNewObject(P3::SceneObjectType::spot, "");
       }
       ImGui::EndMenu();
@@ -561,14 +561,14 @@ P3::addComponentButton(SceneObject& object)
         if (ImGui::MenuItem("Box"))
         {
           auto p = makePrimitive(_defaultMeshes.find("Box"));
-          object.addComponent(p);          
+          object.addComponent(p);
           object.setPrimitive((Reference<Primitive>)p);
         }
 
         if (ImGui::MenuItem("Sphere"))
         {
           auto p = makePrimitive(_defaultMeshes.find("Sphere"));
-          object.addComponent(p);          
+          object.addComponent(p);
           object.setPrimitive((Reference<Primitive>)p);
         }
       }
@@ -597,7 +597,7 @@ P3::addComponentButton(SceneObject& object)
           l->fl(0);
           l->setGammaL(45);
           l->decayExponent(0);
-          object.addComponent(l);          
+          object.addComponent(l);
         }
         if (ImGui::MenuItem("Spot"))
         {
@@ -605,9 +605,9 @@ P3::addComponentButton(SceneObject& object)
           l->fl(0);
           l->setGammaL(45);
           l->decayExponent(0);
-          object.addComponent(l);          
+          object.addComponent(l);
         }
-        
+
       }
       ImGui::EndMenu();
     }
@@ -927,7 +927,7 @@ P3::drawPrimitive(Primitive& primitive)
   _programG.setUniformVec4("material.diffuse", primitive.material.diffuse);
   _programG.setUniformVec4("material.spot", primitive.material.spot);
   _programG.setUniform("material.shine", primitive.material.shine);
- 
+
   _programG.setUniformMat4("transform", t->localToWorldMatrix());
   _programG.setUniformMat3("normalMatrix", normalMatrix);
   _programG.setUniformVec4("ambientLight", _scene->ambientLight);
@@ -983,10 +983,10 @@ P3::drawLight(Light& light)
   mat4f ltw = obj->transform()->localToWorldMatrix();
   mat4f wtl = obj->transform()->worldToLocalMatrix();
   _editor->setVectorColor(light.color);
-  
+
   vec3f normalx = { 1,0,0 };
   vec3f normaly = { 0,1,0 };
-  vec3f normalz = { 0,0,1 }; 
+  vec3f normalz = { 0,0,1 };
 
   normalx = ltw.transformVector(normalx);
   normaly = ltw.transformVector(normaly);
@@ -994,85 +994,76 @@ P3::drawLight(Light& light)
 
   if (light.type() == Light::Type::Point)
   {
-	  _editor->drawVector(pos, normalx *-1, 1.2);
-	  _editor->drawVector(pos, normalx    , 1.2);
-	  _editor->drawVector(pos, normaly *-1, 1.2);
-	  _editor->drawVector(pos, normaly    , 1.2);
-	  _editor->drawVector(pos, normalz *-1, 1.2);
-	  _editor->drawVector(pos, normalz    , 1.2);
+    _editor->drawVector(pos, normalx * -1, 1.2);
+    _editor->drawVector(pos, normalx, 1.2);
+    _editor->drawVector(pos, normaly * -1, 1.2);
+    _editor->drawVector(pos, normaly, 1.2);
+    _editor->drawVector(pos, normalz * -1, 1.2);
+    _editor->drawVector(pos, normalz, 1.2);
 
-	  _editor->drawVector(pos, (normalx + normaly)*0.5, 0.6);
-	  _editor->drawVector(pos, (normalx + normalz)*0.5, 0.6);
-	  _editor->drawVector(pos, (normaly + normalz)*0.5, 0.6);
-	  _editor->drawVector(pos, (normalx + normaly)* -0.5, 0.6);
-	  _editor->drawVector(pos, (normalx + normalz)* -0.5, 0.6);
-	  _editor->drawVector(pos, (normaly + normalz)* -0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normaly) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normalz) * 0.5, 0.6);
+    _editor->drawVector(pos, (normaly + normalz) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normaly) * -0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normalz) * -0.5, 0.6);
+    _editor->drawVector(pos, (normaly + normalz) * -0.5, 0.6);
 
-	  _editor->drawVector(pos, (normalx + normaly * -1) * 0.5, 0.6);
-	  _editor->drawVector(pos, (normalx + normalz * -1) * 0.5, 0.6);
-	  _editor->drawVector(pos, (normaly + normalz * -1) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normaly * -1) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx + normalz * -1) * 0.5, 0.6);
+    _editor->drawVector(pos, (normaly + normalz * -1) * 0.5, 0.6);
 
-	  _editor->drawVector(pos, (normalx * -1 + normaly) * 0.5, 0.6);
-	  _editor->drawVector(pos, (normalx * -1 + normalz) * 0.5, 0.6);
-	  _editor->drawVector(pos, (normaly * -1 + normalz) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx * -1 + normaly) * 0.5, 0.6);
+    _editor->drawVector(pos, (normalx * -1 + normalz) * 0.5, 0.6);
+    _editor->drawVector(pos, (normaly * -1 + normalz) * 0.5, 0.6);
   }
   if (light.type() == Light::Type::Directional)
   {
-	  vec3f dirPoints1 = { -0.5,0,-0.5 };
-	  vec3f dirPoints2 = { -0.5,0,0.5 };
-	  vec3f dirPoints3 = { 0.5,0,0.5 };
-	  vec3f dirPoints4 = { 0.5,0,-0.5 };
+    vec3f dirPoints[5];
+    dirPoints[0] = { 0,0,0 };
+    dirPoints[1] = { -0.5,0,-0.5 };
+    dirPoints[2] = { -0.5,0,0.5 };
+    dirPoints[3] = { 0.5,0,0.5 };
+    dirPoints[4] = { 0.5,0,-0.5 };
 
-	  dirPoints1 = ltw.transform(dirPoints1);
-	  dirPoints1 = ltw.transform(dirPoints1);
-	  dirPoints1 = ltw.transform(dirPoints1);
-	  dirPoints1 = ltw.transform(dirPoints1);
+    for (int i = 0; i < 5; i++)
+    {      
+      _editor->drawLine(ltw.transform(dirPoints[i]), ltw.transform(dirPoints[i]) + normaly * -5);
+      auto cone = GLGraphics3::cone();            
+      _editor->drawMesh(*cone, ltw.transform(dirPoints[i]) + normaly * -5, mat3f{ ltw }, vec3f{ -0.1f, -0.4f, -0.1f });
 
-	  _editor->drawVector(ltw.transform(locPos), normaly*-1, 6.5);
-	  _editor->drawVector(ltw.transform(locPos+dirPoints1), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos+dirPoints2), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos+dirPoints3), normaly*-1, 6);
-	  _editor->drawVector(ltw.transform(locPos+dirPoints4), normaly*-1, 6);
+    }
   }
   if (light.type() == Light::Type::Spot)
   {
-	  float coneHeight = 5.0f;
+    float coneHeight = 5.0f;
 
-	  float hip = coneHeight / std::cos(math::toRadians(light.gammaL()));
+    float hip = coneHeight / std::cos(math::toRadians(light.gammaL()));
 
-	  float co = std::sin(math::toRadians(light.gammaL())) * hip;
+    float co = std::sin(math::toRadians(light.gammaL())) * hip;
 
-	  vec3f px = pos + (normaly * -5) + (normalx * co);
-	  vec3f pz = pos + (normaly * -5) + (normalz * co);
-	  vec3f pmx = pos + (normaly * -5) + (normalx * co * -1);
-	  vec3f pmz = pos + (normaly * -5) + (normalz * co * -1);
+    vec3f px = pos + (normaly * -5) + (normalx * co);
+    vec3f pz = pos + (normaly * -5) + (normalz * co);
+    vec3f pmx = pos + (normaly * -5) + (normalx * co * -1);
+    vec3f pmz = pos + (normaly * -5) + (normalz * co * -1);
 
-	  //vec3f vecx = pos - px;
-	 // vec3f vecz = pos - pz;
-	 // vec3f vecmx = pos - pmx;
-	 // vec3f vecmz = pos - pmz;
+    //vec3f vecx = pos - px;
+   // vec3f vecz = pos - pz;
+   // vec3f vecmx = pos - pmx;
+   // vec3f vecmz = pos - pmz;
 
-	  vec3f vecx = obj->transform()->transformVector(px - pos);
-	  vec3f vecz = obj->transform()->transformVector(pz - pos);
-	  vec3f vecmx = obj->transform()->transformVector(pmx - pos);
-	  vec3f vecmz = obj->transform()->transformVector(pmz - pos);
+    vec3f vecx = obj->transform()->transformVector(px - pos);
+    vec3f vecz = obj->transform()->transformVector(pz - pos);
+    vec3f vecmx = obj->transform()->transformVector(pmx - pos);
+    vec3f vecmz = obj->transform()->transformVector(pmz - pos);
 
-	  _editor->drawVector(pos, vecx, 1);
-	  _editor->drawVector(pos, vecz, 1);
-	  _editor->drawVector(pos, vecmx, 1);
-	  _editor->drawVector(pos, vecmz, 1);
+    _editor->drawLine(pos, vecx);
+    _editor->drawLine(pos, vecz);
+    _editor->drawLine(pos, vecmx);
+    _editor->drawLine(pos, vecmz);
 
-
-	  _editor->drawCircle(pos + (normaly * -5), co, wtl.transposed().transform(normaly));
-	 
-	  
-
-	  
-	
-
-	  
-
-
+    ltw.invert();
+    ltw.transpose();
+    _editor->drawCircle(pos + normaly * -5, co, ltw.transform(normaly));
 
   }
 }
@@ -1285,13 +1276,13 @@ P3::render()
       }
 
     }
-	if (auto l = dynamic_cast<Light*>(it->get()))
-	{
-		if (_current == o)
-		{
-			drawLight(*l);
-		}
-	}
+    if (auto l = dynamic_cast<Light*>(it->get()))
+    {
+      if (_current == o)
+      {
+        drawLight(*l);
+      }
+    }
     if (o == _current)
     {
       auto t = o->transform();
