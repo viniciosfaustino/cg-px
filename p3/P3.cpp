@@ -1026,9 +1026,9 @@ P3::drawLight(Light& light)
     dirPoints[4] = { 0.5,0,-0.5 };
 
     for (int i = 0; i < 5; i++)
-    {      
+    {
       _editor->drawLine(ltw.transform(dirPoints[i]), ltw.transform(dirPoints[i]) + normaly * -5);
-      auto cone = GLGraphics3::cone();            
+      auto cone = GLGraphics3::cone();
       _editor->drawMesh(*cone, ltw.transform(dirPoints[i]) + normaly * -5, mat3f{ ltw }, vec3f{ -0.1f, -0.4f, -0.1f });
 
     }
@@ -1040,30 +1040,17 @@ P3::drawLight(Light& light)
     float hip = coneHeight / std::cos(math::toRadians(light.gammaL()));
 
     float co = std::sin(math::toRadians(light.gammaL())) * hip;
-
-    vec3f px = pos + (normaly * -5) + (normalx * co);
-    vec3f pz = pos + (normaly * -5) + (normalz * co);
-    vec3f pmx = pos + (normaly * -5) + (normalx * co * -1);
-    vec3f pmz = pos + (normaly * -5) + (normalz * co * -1);
-
-    //vec3f vecx = pos - px;
-   // vec3f vecz = pos - pz;
-   // vec3f vecmx = pos - pmx;
-   // vec3f vecmz = pos - pmz;
-
-    vec3f vecx = obj->transform()->transformVector(px - pos);
-    vec3f vecz = obj->transform()->transformVector(pz - pos);
-    vec3f vecmx = obj->transform()->transformVector(pmx - pos);
-    vec3f vecmz = obj->transform()->transformVector(pmz - pos);
-
-    _editor->drawLine(pos, vecx);
-    _editor->drawLine(pos, vecz);
-    _editor->drawLine(pos, vecmx);
-    _editor->drawLine(pos, vecmz);
-
-    ltw.invert();
-    ltw.transpose();
-    _editor->drawCircle(pos + normaly * -5, co, ltw.transform(normaly));
+    vec3f extremes[4];
+    extremes[0] = pos + (normaly * -coneHeight) + (normalx * co);
+    extremes[1] = pos + (normaly * -coneHeight) + (normalz * co);
+    extremes[2] = pos + (normaly * -coneHeight) + (normalx * co * -1);
+    extremes[3]  = pos + (normaly * -coneHeight) + (normalz * co * -1);
+    for (int i = 0; i < 4; i++)
+    {
+      _editor->drawLine(pos, extremes[i]);
+    }
+       
+    _editor->drawCircle(-obj->transform()->up() * coneHeight + pos, co, -normaly * coneHeight);
 
   }
 }
