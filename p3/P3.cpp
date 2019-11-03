@@ -48,7 +48,7 @@ P3::buildScene()
 void
 P3::initialize()
 {
-  Application::loadShaders(_programG, "shaders/gouraud.vert", "shaders/p3.frag");
+  Application::loadShaders(_programG, "shaders/gouraud.vert", "shaders/gouraud.frag");
   Assets::initialize();
   buildDefaultMeshes();
   buildScene();

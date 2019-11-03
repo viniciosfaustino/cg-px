@@ -93,5 +93,14 @@
     <None Include="..\..\assets\shaders\gouraud.vert">
       <Filter>Source Files\shaders</Filter>
     </None>
+    <None Include="..\..\assets\shaders\gouraud.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\phong.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\phong.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
