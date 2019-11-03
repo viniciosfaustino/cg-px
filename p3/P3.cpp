@@ -939,7 +939,7 @@ P3::drawPrimitive(Primitive& primitive)
   drawMesh(m, GL_FILL);
   if (primitive.sceneObject() != _current)
     return;
-  //_programG.setUniformVec4("color", _selectedWireframeColor);
+  _programG.setUniformVec4("material.diffuse", _selectedWireframeColor);
   _programG.setUniform("flatMode", (int)1);
   drawMesh(m, GL_LINE);
 }
