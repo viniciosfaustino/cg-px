@@ -48,12 +48,13 @@ P3::buildScene()
 void
 P3::initialize()
 {
-  Application::loadShaders(_programG, "shaders/phong.vert", "shaders/phong.frag");
+  Application::loadShaders(_programG, "shaders/gouraud.vert", "shaders/gouraud.frag");
+  Application::loadShaders(_programP, "shaders/phong.vert", "shaders/phong.frag");  
   Assets::initialize();
   buildDefaultMeshes();
   buildScene();
   _renderer = new GLRenderer{ *_scene };
-  _renderer->setProgram(&_programG);
+  _renderer->setProgram(&_programP);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(1.0f, 1.0f);
@@ -964,10 +965,10 @@ P3::preview() {
   {*/
   /*if (obj->camera())*/
     /*_renderer->setCamera(obj->camera());
-  _renderer->setImageSize(width(), height());
-  _renderer->setProgram(&_programG);*/
+  _renderer->setImageSize(width(), height());*/
+  _renderer->setProgram(&_programP);
   _renderer->render();
-  //_programG.use();
+  _programG.use();
 
 //}
   glDisable(GL_SCISSOR_TEST);
@@ -1048,10 +1049,8 @@ P3::drawLight(Light& light)
     for (int i = 0; i < 4; i++)
     {
       _editor->drawLine(pos, extremes[i]);
-    }
-       
+    }       
     _editor->drawCircle(-obj->transform()->up() * coneHeight + pos, co, -normaly * coneHeight);
-
   }
 }
 
@@ -1148,7 +1147,6 @@ P3::drawCamera(Camera& camera)
 
         _editor->drawLine(p8, p5);
 
-
         //frustum Connecting Lines 
         _editor->drawLine(p1, p5);
 
@@ -1157,8 +1155,6 @@ P3::drawCamera(Camera& camera)
         _editor->drawLine(p3, p7);
 
         _editor->drawLine(p4, p8);
-
-
       }
     }
   }
@@ -1171,7 +1167,7 @@ P3::renderScene()
   {
     _renderer->setCamera(camera);
     _renderer->setImageSize(width(), height());
-    _renderer->setProgram(&_programG);
+    _renderer->setProgram(&_programP);
     _renderer->render();
     _programG.use();
   }
@@ -1183,6 +1179,7 @@ constexpr auto ZOOM_SCALE = 1.01f;
 void
 P3::render()
 {
+  _programG.use();
   if (_viewMode == ViewMode::Renderer)
   {
     renderScene();
@@ -1261,7 +1258,7 @@ P3::render()
         _renderer->setCamera(c);
         _renderer->setImageSize(width(), height());
       }
-
+      _programG.use();
     }
     if (auto l = dynamic_cast<Light*>(it->get()))
     {

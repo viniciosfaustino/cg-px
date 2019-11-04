@@ -17,8 +17,8 @@ class P3: public GLWindow
 public:
   P3(int width, int height):
     GLWindow{"cg2019 - P3", width, height},
-    _programG{"P3"},
-    _programP{ "P3"}
+    _programG{"P3G"},
+    _programP{"P3P"}
   {
     // do nothing
   }
@@ -78,6 +78,8 @@ public:
 
   /// Update the GUI.
   void gui() override;
+
+  void loadShader(bool editor);
 
   /// Render the scene.
   void render() override;

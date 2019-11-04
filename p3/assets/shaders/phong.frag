@@ -12,7 +12,7 @@ struct Light
   int type;
   int fl;
   float gammaL;
-  int decayExponent;  
+  int decayExponent;
   vec3 lightPosition;
   vec4 lightColor;
   vec3 direction;
@@ -51,7 +51,7 @@ vec4 elementwiseMult(vec4 a, vec4 b)
 
 void main()
 {
-  fragmentColor = vec4(0);
+  //fragmentColor = vec4(0);
   //vec4 P = transform * position;
   vec3 L = normalize(lights[0].lightPosition - vec3(P));
   //vec3 N = normalize(normalMatrix * normal);
@@ -73,7 +73,7 @@ void main()
   float gammaL;
 
   OaIa = elementwiseMult(material.ambient, A);  
-  fragmentColor = OaIa;
+  I = OaIa;
   //tem que rodar nos bangs aqui e ir computando as paradas igual ta na descricao do trabalho
   for (int i = 0; i < numLights; i++)
   {
@@ -94,16 +94,16 @@ void main()
         gammaL = radians(float(lights[i].gammaL));
         Ll = normalize(lights[i].lightPosition - vec3(P)); //aqui ja ta invertido o lL
         phiL = abs(acos(dot(lights[i].direction,-Ll)));
-        Il = gammaL < phiL ? vec4(255) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[i].decayExponent);
+        dl = distance(vec3(P), lights[i].lightPosition);
+        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[i].decayExponent);        
         break;
     }
 
     OdIl = elementwiseMult(material.diffuse, Il);
     OsIl = elementwiseMult(material.spot, Il);
     Rl = reflect(Ll, N);
-    fragmentColor += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(Rl,V), 0),1 - float(flatMode)), material.shine);
-
+    I += OdIl*max(dot(N,Ll),flatMode) + OsIl * pow(min(max(dot(Rl,V), 0),1 - float(flatMode)), material.shine);    
   }//end for
-  //fragmentColor = I;
+  fragmentColor = I;
 }//end main
 
