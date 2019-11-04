@@ -105,36 +105,6 @@ namespace cg
     drawMesh(m, GL_FILL);
   }
 
-
-  void GLRenderer::renderRecursive(Reference<SceneObject> parent)
-  {
-    auto it = parent->getIterator();
-    auto end = parent->getIteratorEnd();
-    while (it != end)
-    {
-      if (it->get()->childrenSize() > 0)
-      {
-        renderRecursive(it->get());
-      }
-      else {
-        auto o = it->get();
-        if (!o->visible)
-          continue;
-
-        auto it = o->getComponentsIterator();
-        auto itEnd = o->getComponentsEnd();
-        while (it != itEnd)
-        {
-          auto component = it->get();
-          if (auto p = dynamic_cast<Primitive*>(component))
-            drawPrimitive(*p);
-          it++;
-        }
-      }
-      it++;
-    }
-  }
-
   void
     GLRenderer::render()
   {
@@ -156,7 +126,15 @@ namespace cg
     program->setUniformVec3("camPos", ec->transform()->position());
 
 
-    renderRecursive(_scene->root());
+    auto it = _scene->getScenePrimitiveIterator();
+    auto end = _scene->getScenePrimitiveEnd();
+    for (; it != end; it++)
+    {
+      if (auto p1 = dynamic_cast<Primitive*>(it->get()))
+      {
+        drawPrimitive(*p1);
+      }      
+    }
   }
 
 } // end namespace cg
