@@ -39,7 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\shaders\gouraud.frag" />
-    <None Include="..\..\assets\shaders\p3.frag" />
     <None Include="..\..\assets\shaders\gouraud.vert" />
     <None Include="..\..\assets\shaders\phong.frag" />
     <None Include="..\..\assets\shaders\phong.vert" />

@@ -87,9 +87,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\assets\shaders\p3.frag">
-      <Filter>Source Files\shaders</Filter>
-    </None>
     <None Include="..\..\assets\shaders\gouraud.vert">
       <Filter>Source Files\shaders</Filter>
     </None>

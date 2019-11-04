@@ -35,6 +35,8 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 
 out vec4 vertexColor;
+out vec3 N;
+out vec4 P;
 
 
 vec4 elementwiseMult(vec4 a, vec4 b)
@@ -49,9 +51,9 @@ vec4 elementwiseMult(vec4 a, vec4 b)
 
 void main()
 {
-  vec4 P = transform * position;
+  P = transform * position;
   vec3 L = normalize(lights[0].lightPosition - vec3(P));
-  vec3 N = normalize(normalMatrix * normal);
+  N = normalize(normalMatrix * normal);
   vec4 A = ambientLight * float(1 - flatMode); //Ia
   
   vec4 OaIa;

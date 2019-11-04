@@ -91,7 +91,7 @@ void main()
         gammaL = radians(float(lights[i].gammaL));
         Ll = normalize(lights[i].lightPosition - vec3(P)); //aqui ja ta invertido o lL
         phiL = abs(acos(dot(lights[i].direction,-Ll)));
-        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[0].decayExponent);
+        Il = gammaL < phiL ? vec4(0) : lights[i].lightColor/pow(dl,lights[i].fl)*pow(cos(phiL), lights[i].decayExponent);
         break;
     }
 
