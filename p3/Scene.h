@@ -147,6 +147,13 @@ public:
     return this->_sceneLights.size();
   }
   
+
+  void clearScene()
+  {
+    this->_root->_children.clear();
+    this->_sceneLights.clear();
+    this->_scenePrimitives.clear();    
+  }
 }; // Scene
 
 } // end namespace cg

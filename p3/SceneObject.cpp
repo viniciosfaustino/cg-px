@@ -82,6 +82,11 @@ namespace cg
         _scene->removeScenePrimitive(p);
       }
       
+      if (auto l = dynamic_cast<Light*>((Component*)*it))
+      {
+        _scene->removeSceneLight(l);
+        _scene->removeScenePrimitive(l);
+      }
     }
     auto childIt = getIterator();
     auto childItEnd = getIteratorEnd();

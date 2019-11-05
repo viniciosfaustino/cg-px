@@ -26,6 +26,8 @@ public:
   /// Initialize the app.
   void initialize() override;
 
+  Reference<Light> createLight(cg::Light::Type type);
+
   void recursionTree(bool open, Reference<SceneObject> object)
   {
     if (open)
@@ -118,7 +120,7 @@ private:
   };
 
   GLSL::Program _programG, _programP;
-  Reference<Scene> _scene;
+  Reference<Scene> _scene;  
   Reference<SceneEditor> _editor;
   Reference<GLRenderer> _renderer;
   // **Begin temporary attributes
@@ -139,6 +141,8 @@ private:
   ViewMode _viewMode{ViewMode::Editor};
 
   static MeshMap _defaultMeshes;
+
+  void buildScene2();
 
   void buildScene();
   void renderScene();
