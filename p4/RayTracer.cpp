@@ -202,6 +202,7 @@ RayTracer::intersect(const Ray& ray, Intersection& hit)
 {
   hit.object = nullptr;
   hit.distance = ray.tMax;
+
   // TODO: insert your code here
   return hit.object != nullptr;
 }

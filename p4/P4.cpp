@@ -22,24 +22,24 @@ viewportToNDC(int x, int y)
   return vec4f{ xn, yn, -1, 1 };
 }
 
-//inline Ray
-//P4::makeRay(int x, int y) const
-//{
-//  auto c = _editor->camera();
-//  mat4f m{vpMatrix(c)};
-//
-//  m.invert();
-//
-//  auto p = normalize(m * viewportToNDC(x, height() - y));
-//  auto t = c->transform();
-//  Ray r{t->position(), -t->forward()};
-//
-//  if (c->projectionType() == Camera::Perspective)
-//    r.direction = (p - r.origin).versor();
-//  else
-//    r.origin = p - r.direction * c->nearPlane();
-//  return r;
-//}
+inline Ray
+P4::makeRay(int x, int y) const
+{
+  auto c = _editor->camera();
+  mat4f m{ vpMatrix(c) };
+
+  m.invert();
+
+  auto p = normalize(m * viewportToNDC(x, height() - y));
+  auto t = c->transform();
+  Ray r{ t->position(), -t->forward() };
+
+  if (c->projectionType() == Camera::Perspective)
+    r.direction = (p - r.origin).versor();
+  else
+    r.origin = p - r.direction * c->nearPlane();
+  return r;
+}
 
 inline void
 P4::buildDefaultMeshes()
@@ -1629,31 +1629,25 @@ P4::mouseButtonInputEvent(int button, int actions, int mods)
     {
       cursorPosition(_pivotX, _pivotY);
 
-      //const auto ray = makeRay(_pivotX, _pivotY);
+      const auto ray = makeRay(_pivotX, _pivotY);
       auto minDistance = math::Limits<float>::inf();
 
       // **Begin picking of temporary scene objects
       // It should be replaced by your picking code
-      for (const auto& o : _objects)
+      auto it = _scene->getScenePrimitiveIterator();
+      auto end = _scene->getScenePrimitiveEnd();
+      for (; it != end; it++)
       {
-        if (!o->visible)
-          continue;
+        auto component = it->get();
 
-        auto it = o->getComponentsIterator();
-        auto end = o->getComponentsEnd();
-        for (; it != end; it++)
-        {
-          auto component = it->get();
+        float distance;
 
-          float distance;
-
-         /* if (auto p = dynamic_cast<Primitive*>(component))
-            if (p->intersect(ray, distance) && distance < minDistance)
-            {
-              minDistance = distance;
-              _current = o;
-            }*/
-        }
+        if (auto p = dynamic_cast<Primitive*>(component))
+          if (p->intersect(ray, distance) && distance < minDistance)
+          {
+            minDistance = distance;
+            _current = component->sceneObject();
+          }
       }
       // **End picking of temporary scene objects
     }
