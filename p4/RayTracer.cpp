@@ -202,7 +202,25 @@ RayTracer::intersect(const Ray& ray, Intersection& hit)
 {
   hit.object = nullptr;
   hit.distance = ray.tMax;
-
+  float distance = ray.tMax;
+  auto scene = this->scene();
+  auto it = scene->getScenePrimitiveIterator();
+  auto end = scene->getScenePrimitiveEnd();
+  for (; it != end; it++)
+  {
+    auto component = it->get();
+    if (auto p = dynamic_cast<Primitive*>(component))
+    {
+      if (p->intersect(ray, distance))
+      {
+        if (distance < hit.distance)
+        {
+          hit.distance = distance;
+          hit.object = p;
+        }
+      }
+    }
+  }
   // TODO: insert your code here
   return hit.object != nullptr;
 }
