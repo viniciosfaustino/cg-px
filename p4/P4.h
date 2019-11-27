@@ -85,6 +85,8 @@ public:
   /// Update the GUI.
   void gui() override;
 
+  void loadLights();
+
   /// Render the scene.
   void render() override;
 
@@ -187,7 +189,9 @@ private:
 
   static void buildDefaultMeshes();
   void createNewObject(SceneObjectType type, std::string shape);
+  void setObj(Reference<Scene> o, vec3f localPos, vec3f localScale, vec3f rotate, Reference<Scene>_scene);
 
 }; // P4
 
 #endif // __P4_h
+

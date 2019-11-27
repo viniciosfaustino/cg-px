@@ -32,38 +32,96 @@
 
 #include "Primitive.h"
 #include "Transform.h"
+#include "Intersection.h"
 
 namespace cg
 { // begin namespace cg
 
-bool
-Primitive::intersect(const Ray& ray, float& distance) const
-{
-  if (_mesh == nullptr)
-    return false;
-
-  auto t = const_cast<Primitive*>(this)->transform();
-  Ray localRay{ray, t->worldToLocalMatrix()};
-  auto d = math::inverse(localRay.direction.length());
-  float tMin;
-  float tMax;
-
-  localRay.direction *= d;
-  if (_mesh->bounds().intersect(localRay, tMin, tMax))
+  bool
+    Primitive::intersect(const Ray& ray, Intersection& hit) const
   {
-    // TODO: mesh intersection
-    if (tMin >= ray.tMin && tMin <= ray.tMax)
+    if (_mesh == nullptr)
+      return false;
+
+    auto t = const_cast<Primitive*>(this)->transform();
+    auto origin = t->worldToLocalMatrix().transform(ray.origin);
+    auto D = t->worldToLocalMatrix().transformVector(ray.direction);
+    Ray localRay{ origin, D };
+    auto d = math::inverse(D.length());
+    float tMin;
+    float tMax;
+
+    float localMin = math::Limits<float>::inf();
+
+    //localRay.direction *= d;
+    if (_mesh->bounds().intersect(localRay, tMin, tMax))
     {
-      distance = tMin * d;
-      return true;
+      // TODO: mesh intersection
+
+      //iterar dentro dos triangulugulu      
+      auto triangles = _mesh->data().triangles;
+      auto numTriangles = _mesh->data().numberOfTriangles;
+      auto vertexArray = _mesh->data().vertices;
+      for (int i = 0; i < numTriangles; i++)
+      {
+
+        auto p0 = vertexArray[triangles[i].v[0]];
+        auto p1 = vertexArray[triangles[i].v[1]];
+        auto p2 = vertexArray[triangles[i].v[2]];
+        auto e1 = p1 - p0;// #1
+        auto e2 = p2 - p0;// #2
+        auto s1 = D.cross(e2);// #3
+        auto s1e1 = s1.dot(e1);
+        auto invd = 1 / s1e1;
+        if (math::isZero(abs(invd)))// #4
+        {
+          continue; //5
+        }
+
+        auto s = origin - p0; // #6
+        auto s2 = s.cross(e1);// #7
+        auto t = s2.dot(e2) * invd;// #8
+        if (t < 0)
+        {
+          continue;
+        }
+
+        auto b1 = s1.dot(s) * invd;// #9
+        if (b1 < 0)
+        {
+          continue;
+        }
+
+        auto b2 = s2.dot(D) * invd;// #10
+        if (b2 < 0)
+        {
+          continue;
+        }
+
+        if (b1 + b2 > 1)
+        {
+          continue;
+        }
+        auto td = t * d;
+        if (td > localMin) continue;
+        hit.triangleIndex = i;
+        hit.distance = localMin = td;
+        hit.p = vec3f{ 1 - b1 - b2, b1, b2 };
+
+      }
+
+      /*if (tMin >= ray.tMin && tMin <= ray.tMax)
+      {
+        distance = tMin * d;
+        return true;
+      }
+      if (tMax >= ray.tMin && tMax <= ray.tMax)
+      {
+        distance = tMax * d;
+        return true;
+      }*/
     }
-    if (tMax >= ray.tMin && tMax <= ray.tMax)
-    {
-      distance = tMax * d;
-      return true;
-    }
+    return localMin != math::Limits<float>::inf();
   }
-  return false;
-}
 
 } // end namespace cg

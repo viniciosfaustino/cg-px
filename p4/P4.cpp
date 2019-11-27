@@ -87,13 +87,22 @@ P4::buildScene()
 }
 
 inline void
-P4::buildScene2()
+setObj(Reference<SceneObject> o, vec3f localPos, vec3f localScale, vec3f rotate, Reference<Scene>_scene)
 {
-  //_scene->clearScene();
-  //_objects.clear();
+  o->setParent(_scene->root());  
+  o->transform()->setLocalPosition(localPos);
+  o->transform()->rotate(rotate);
+}
+inline void
+setCam(Reference<Camera>cam, Reference<SceneObject>o, float f, float b)
+{
 
+}
+
+inline void
+P4::buildScene2()
+{  
   _current = _scene = new Scene{ "Scene 1" };
-
   _editor = new SceneEditor{ *_scene };
   _editor->setDefaultView((float)width() / (float)height());
 
@@ -107,193 +116,192 @@ P4::buildScene2()
   o->transform()->setLocalPosition(vec3f(0, 14, 0));
   o->transform()->rotate(vec3f(-90, 0, 0));
 
-
   o->addComponent(camera);
 
   _objects.push_back(o);
   _scene->root()->addChild(o);
   Camera::setCurrent(camera);
 
-  auto _ground = new SceneObject{ "ground", _scene };
+  o = new SceneObject{ "ground", _scene };
 
   auto p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _ground->setParent(_scene->root());
-  _ground->addComponent(p1);
-  _ground->transform()->setLocalScale(vec3f(7, 0.01, 7));
-  _scene->root()->addChild(_ground);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(7, 0.01, 7));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base1 = new SceneObject{ "base1", _scene };
-  _base1->setParent(_scene->root());
+  o = new SceneObject{ "base1", _scene };
+  o->setParent(_scene->root());
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base1->addComponent(p1);
-  _base1->transform()->setLocalScale(vec3f(4, 0.25, 4));
-  _base1->transform()->setLocalPosition(vec3f(0, 0.25, 0));
-  _scene->root()->addChild(_base1);
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(4, 0.25, 4));
+  o->transform()->setLocalPosition(vec3f(0, 0.25, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base2 = new SceneObject{ "base2", _scene };
+  o = new SceneObject{ "base2", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base2->setParent(_scene->root());
-  _base2->addComponent(p1);
-  _base2->transform()->setLocalScale(vec3f(3.75, 0.5, 3.75));
-  _base2->transform()->setLocalPosition(vec3f(0, 0.5, 0));
-  _scene->root()->addChild(_base2);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(3.75, 0.5, 3.75));
+  o->transform()->setLocalPosition(vec3f(0, 0.5, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base3 = new SceneObject{ "base3", _scene };
+  o = new SceneObject{ "base3", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base3->setParent(_scene->root());
-  _base3->addComponent(p1);
-  _base3->transform()->setLocalScale(vec3f(3.5, 0.75, 3.5));
-  _base3->transform()->setLocalPosition(vec3f(0, 0.75, 0));
-  _scene->root()->addChild(_base3);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(3.5, 0.75, 3.5));
+  o->transform()->setLocalPosition(vec3f(0, 0.75, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base4 = new SceneObject{ "base4", _scene };
+  o = new SceneObject{ "base4", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base4->setParent(_scene->root());
-  _base4->addComponent(p1);
-  _base4->transform()->setLocalScale(vec3f(3.25, 1, 3.25));
-  _base4->transform()->setLocalPosition(vec3f(0, 1, 0));
-  _scene->root()->addChild(_base4);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(3.25, 1, 3.25));
+  o->transform()->setLocalPosition(vec3f(0, 1, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base5 = new SceneObject{ "base5", _scene };
+  o = new SceneObject{ "base5", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base5->setParent(_scene->root());
-  _base5->addComponent(p1);
-  _base5->transform()->setLocalScale(vec3f(3.0, 1.25, 3.0));
-  _base5->transform()->setLocalPosition(vec3f(0, 1.25, 0));
-  _scene->root()->addChild(_base5);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(3.0, 1.25, 3.0));
+  o->transform()->setLocalPosition(vec3f(0, 1.25, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base6 = new SceneObject{ "base6", _scene };
+  o = new SceneObject{ "base6", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base6->setParent(_scene->root());
-  _base6->addComponent(p1);
-  _base6->transform()->setLocalScale(vec3f(2.75, 1.5, 2.75));
-  _base6->transform()->setLocalPosition(vec3f(0, 1.5, 0));
-  _scene->root()->addChild(_base6);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(2.75, 1.5, 2.75));
+  o->transform()->setLocalPosition(vec3f(0, 1.5, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base7 = new SceneObject{ "base7", _scene };
+  o = new SceneObject{ "base7", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base7->setParent(_scene->root());
-  _base7->addComponent(p1);
-  _base7->transform()->setLocalScale(vec3f(2.5, 1.75, 2.5));
-  _base7->transform()->setLocalPosition(vec3f(0, 1.75, 0));
-  _scene->root()->addChild(_base7);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(2.5, 1.75, 2.5));
+  o->transform()->setLocalPosition(vec3f(0, 1.75, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _base8 = new SceneObject{ "base8", _scene };
+  o = new SceneObject{ "base8", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _base8->setParent(_scene->root());
-  _base8->addComponent(p1);
-  _base8->transform()->setLocalScale(vec3f(2.0, 2.0, 2.0));
-  _base8->transform()->setLocalPosition(vec3f(0, 2.0, 0));
-  _scene->root()->addChild(_base8);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(2.0, 2.0, 2.0));
+  o->transform()->setLocalPosition(vec3f(0, 2.0, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _stair1 = new SceneObject{ "stair1", _scene };
+  o = new SceneObject{ "stair1", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _stair1->setParent(_scene->root());
-  _stair1->addComponent(p1);
-  _stair1->transform()->setLocalScale(vec3f(0.1, 1.7, 0.5));
-  _stair1->transform()->setLocalPosition(vec3f(3.4, 1.5, 0));
-  _stair1->transform()->rotate(vec3f(0, 0, 27));
-  _scene->root()->addChild(_stair1);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(0.1, 1.7, 0.5));
+  o->transform()->setLocalPosition(vec3f(3.4, 1.5, 0));
+  o->transform()->rotate(vec3f(0, 0, 27));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _stair2 = new SceneObject{ "stair2", _scene };
+  o = new SceneObject{ "stair2", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _stair2->setParent(_scene->root());
-  _stair2->addComponent(p1);
-  _stair2->transform()->setLocalScale(vec3f(0.1, 1.7, 0.5));
-  _stair2->transform()->setLocalPosition(vec3f(-3.4, 1.5, 0));
-  _stair2->transform()->rotate(vec3f(0, 0, -27));
-  _scene->root()->addChild(_stair2);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(0.1, 1.7, 0.5));
+  o->transform()->setLocalPosition(vec3f(-3.4, 1.5, 0));
+  o->transform()->rotate(vec3f(0, 0, -27));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _stair3 = new SceneObject{ "stair3", _scene };
+  o = new SceneObject{ "stair3", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _stair3->setParent(_scene->root());
-  _stair3->addComponent(p1);
-  _stair3->transform()->setLocalScale(vec3f(0.5, 1.7, 0.1));
-  _stair3->transform()->setLocalPosition(vec3f(0, 1.5, -3.4));
-  _stair3->transform()->rotate(vec3f(27, 0, 0));
-  _scene->root()->addChild(_stair3);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(0.5, 1.7, 0.1));
+  o->transform()->setLocalPosition(vec3f(0, 1.5, -3.4));
+  o->transform()->rotate(vec3f(27, 0, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _stair4 = new SceneObject{ "stair4", _scene };
+  o = new SceneObject{ "stair4", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
-  _stair4->setParent(_scene->root());
-  _stair4->addComponent(p1);
-  _stair4->transform()->setLocalScale(vec3f(0.5, 1.7, 0.1));
-  _stair4->transform()->setLocalPosition(vec3f(0, 1.5, 3.4));
-  _stair4->transform()->rotate(vec3f(-27, 0, 0));
-  _scene->root()->addChild(_stair4);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(0.5, 1.7, 0.1));
+  o->transform()->setLocalPosition(vec3f(0, 1.5, 3.4));
+  o->transform()->rotate(vec3f(-27, 0, 0));
+  _scene->root()->addChild(o);
 
-  Reference<SceneObject> _cupula = new SceneObject{ "cupula", _scene };
+  o = new SceneObject{ "cupula", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Sphere"));
-  _cupula->setParent(_scene->root());
-  _cupula->addComponent(p1);
-  _cupula->transform()->setLocalScale(vec3f(1.5, 1.5, 1.5));
-  _cupula->transform()->setLocalPosition(vec3f(0, 3.5, 0));
-  _scene->root()->addChild(_cupula);
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(1.5, 1.5, 1.5));
+  o->transform()->setLocalPosition(vec3f(0, 3.5, 0));
+  _scene->root()->addChild(o);
 
   //lights  
   auto l = createLight(cg::Light::Type::Spot);
-  auto _light0 = new SceneObject{ "light0", _scene };
+  o = new SceneObject{ "light0", _scene };
   l->color = vec4f(0.4823, 0.4823, 0.4823, 1);
-  _light0->setParent(_scene->root());
-  _light0->addComponent(l);
-  _light0->transform()->setLocalPosition(vec3f(0, 5.5, 0));
-  _scene->root()->addChild(_light0);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0, 5.5, 0));
+  _scene->root()->addChild(o);
 
 
   l = createLight(cg::Light::Type::Spot);
-  auto _light1 = new SceneObject{ "light1", _scene };
+  o = new SceneObject{ "light1", _scene };
   l->color = vec4f(1, 0, 0, 1);
   l->setGammaL(15.f);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->setLocalPosition(vec3f(0, 5.9, -0.5));
-  _light1->transform()->rotate(vec3f(-38, 0, 0));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0, 5.9, -0.5));
+  o->transform()->rotate(vec3f(-38, 0, 0));
+  _scene->root()->addChild(o);
 
   l = createLight(cg::Light::Type::Spot);
-  _light1 = new SceneObject{ "light2", _scene };
+  o = new SceneObject{ "light2", _scene };
   l->color = vec4f(0, 0, 1, 1);
   l->setGammaL(15.f);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->setLocalPosition(vec3f(0, 5.9, 0.5));
-  _light1->transform()->rotate(vec3f(38, 0, 0));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0, 5.9, 0.5));
+  o->transform()->rotate(vec3f(38, 0, 0));
+  _scene->root()->addChild(o);
 
   l = createLight(cg::Light::Type::Spot);
-  _light1 = new SceneObject{ "light3", _scene };
+  o = new SceneObject{ "light3", _scene };
   l->color = vec4f(0, 1, 0, 1);
   l->setGammaL(15.f);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->setLocalPosition(vec3f(0.5, 5.9, 0));
-  _light1->transform()->rotate(vec3f(0, 0, -38));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0.5, 5.9, 0));
+  o->transform()->rotate(vec3f(0, 0, -38));
+  _scene->root()->addChild(o);
 
 
   l = createLight(cg::Light::Type::Directional);
-  _light1 = new SceneObject{ "light4", _scene };
+  o = new SceneObject{ "light4", _scene };
   l->color = vec4f(1, 0, 0, 1);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->rotate(vec3f(90, 0, 0));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->rotate(vec3f(90, 0, 0));
+  _scene->root()->addChild(o);
 
   l = createLight(cg::Light::Type::Directional);
-  _light1 = new SceneObject{ "light5", _scene };
+  o = new SceneObject{ "light5", _scene };
   l->color = vec4f(0, 0, 1, 1);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->rotate(vec3f(0, 0, 90));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->rotate(vec3f(0, 0, 90));
+  _scene->root()->addChild(o);
 
   l = createLight(cg::Light::Type::Point);
-  _light1 = new SceneObject{ "light6", _scene };
+  o = new SceneObject{ "light6", _scene };
   l->color = vec4f(1, 1, 1, 1);
-  _light1->setParent(_scene->root());
-  _light1->addComponent(l);
-  _light1->transform()->setLocalPosition(vec3f(0, 3.3, 0));
-  _scene->root()->addChild(_light1);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0, 3.3, 0));
+  _scene->root()->addChild(o);
 
   camera = new Camera;
   camera->setViewAngle(60);
@@ -321,7 +329,7 @@ P4::initialize()
   Application::loadShaders(_programP, "shaders/phong.vert", "shaders/phong.frag");
   Assets::initialize();
   buildDefaultMeshes();
-  buildScene2();
+  buildScene();
   _renderer = new GLRenderer{ *_scene };
   _rayTracer = new RayTracer{ *_scene };
   _renderer->setProgram(&_programP);
@@ -1169,6 +1177,20 @@ P4::mainMenu()
       }
       ImGui::EndMenu();
     }
+    if (ImGui::BeginMenu("Examples"))
+    {
+      if (ImGui::MenuItem("Scene 1"))
+      {
+        _scene->clearScene();
+        buildScene();
+      }
+      if (ImGui::MenuItem("Scene 2"))
+      {
+        _scene->clearScene();
+        buildScene2();
+      }
+      ImGui::EndMenu();
+    }
     ImGui::EndMainMenuBar();
   }
 }
@@ -1220,12 +1242,12 @@ P4::drawPrimitive(Primitive& primitive)
   m->bind();
   drawMesh(m, GL_FILL);
 
-  // **Begin BVH test
-  auto bvh = bvhMap[mesh];
+  //// **Begin BVH test
+  //auto bvh = bvhMap[mesh];
 
-  if (bvh == nullptr)
-    bvhMap[mesh] = bvh = new BVH{ *mesh, 16 };
-  // **End BVH test
+  //if (bvh == nullptr)
+  //  bvhMap[mesh] = bvh = new BVH{ *mesh, 16 };
+  //// **End BVH test
 
 
   if (primitive.sceneObject() != _current)
@@ -1234,11 +1256,12 @@ P4::drawPrimitive(Primitive& primitive)
   _programG.setUniform("flatMode", (int)1);
   drawMesh(m, GL_LINE);
 
-  bvh->iterate([this, t](const BVHNodeInfo& node)
+  /*bvh->iterate([this, t](const BVHNodeInfo& node)
     {
       _editor->setLineColor(node.isLeaf ? Color::yellow : Color::magenta);
       _editor->drawBounds(node.bounds, t->localToWorldMatrix());
-    });
+    });*/
+
 
 }
 
@@ -1482,6 +1505,31 @@ constexpr auto CAMERA_RES = 0.01f;
 constexpr auto ZOOM_SCALE = 1.01f;
 
 void
+P4::loadLights()
+{
+  auto lit = _scene->getSceneLightsIterator();
+  auto lend = _scene->getSceneLightsEnd();
+  int cont = 0;
+  int size = std::min(_scene->getSceneLightsCounter(), 10);
+  std::string attr;
+  for (; lit != lend && cont < size; lit++)
+  {
+    attr = "lights[" + std::to_string(cont) + "].";
+    _programG.setUniform((attr + "type").c_str(), lit->get()->type());
+    _programG.setUniform((attr + "fl").c_str(), lit->get()->fl());
+    _programG.setUniform((attr + "gammaL").c_str(), lit->get()->gammaL());
+    _programG.setUniform((attr + "decayExponent").c_str(), lit->get()->decayExponent());
+    _programG.setUniformVec3((attr + "lightPosition").c_str(), lit->get()->sceneObject()->transform()->position());
+    _programG.setUniformVec4((attr + "lightColor").c_str(), lit->get()->color);
+    _programG.setUniformVec3((attr + "direction").c_str(), lit->get()->sceneObject()->transform()->rotation() * vec3f(0, -1, 0));
+
+    cont++;
+  }
+
+  _programG.setUniform("numLights", (int)size);
+}
+
+void
 P4::render()
 {
   _programG.use();
@@ -1521,27 +1569,8 @@ P4::render()
   _programG.setUniformVec4("ambientLight", _scene->ambientLight);
   _programG.setUniformVec3("camPos", ec->transform()->position());
   //_programG.setUniformVec3("lightPosition", p);
-
-  auto lit = _scene->getSceneLightsIterator();
-  auto lend = _scene->getSceneLightsEnd();
-  int cont = 0;
-  int size = std::min(_scene->getSceneLightsCounter(), 10);
-  std::string attr;
-  for (; lit != lend && cont < size; lit++)
-  {
-    attr = "lights[" + std::to_string(cont) + "].";
-    _programG.setUniform((attr + "type").c_str(), lit->get()->type());
-    _programG.setUniform((attr + "fl").c_str(), lit->get()->fl());
-    _programG.setUniform((attr + "gammaL").c_str(), lit->get()->gammaL());
-    _programG.setUniform((attr + "decayExponent").c_str(), lit->get()->decayExponent());
-    _programG.setUniformVec3((attr + "lightPosition").c_str(), lit->get()->sceneObject()->transform()->position());
-    _programG.setUniformVec4((attr + "lightColor").c_str(), lit->get()->color);
-    _programG.setUniformVec3((attr + "direction").c_str(), lit->get()->sceneObject()->transform()->rotation() * vec3f(0, -1, 0));
-
-    cont++;
-  }
-
-  _programG.setUniform("numLights", (int)size);
+  
+  loadLights();
 
 
   auto it = _scene->getScenePrimitiveIterator();
@@ -1654,6 +1683,7 @@ P4::mouseButtonInputEvent(int button, int actions, int mods)
       // It should be replaced by your picking code
       auto it = _scene->getScenePrimitiveIterator();
       auto end = _scene->getScenePrimitiveEnd();
+      Intersection hit;
       for (; it != end; it++)
       {
         auto component = it->get();
@@ -1661,9 +1691,9 @@ P4::mouseButtonInputEvent(int button, int actions, int mods)
         float distance;
 
         if (auto p = dynamic_cast<Primitive*>(component))
-          if (p->intersect(ray, distance) && distance < minDistance)
+          if (p->intersect(ray, hit) && hit.distance < minDistance)
           {
-            minDistance = distance;
+            minDistance = hit.distance;
             _current = component->sceneObject();
           }
       }

@@ -211,7 +211,7 @@ RayTracer::intersect(const Ray& ray, Intersection& hit)
     auto component = it->get();
     if (auto p = dynamic_cast<Primitive*>(component))
     {
-      if (p->intersect(ray, distance))
+      if (p->intersect(ray, hit))
       {
         _numberOfHits++;
         if (distance < hit.distance)
@@ -238,6 +238,9 @@ RayTracer::shade(const Ray& ray, Intersection& hit, int level, float weight)
 //[]---------------------------------------------------[]
 {
   // TODO: insert your code here
+
+
+
   return Color::black;
 }
 

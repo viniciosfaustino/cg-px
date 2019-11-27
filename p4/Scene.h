@@ -68,7 +68,6 @@ public:
   }
 
  
-
   auto root()
   {
     return _root;
@@ -152,7 +151,7 @@ public:
   {
     this->_root->_children.clear();
     this->_sceneLights.clear();
-    this->_scenePrimitives.clear();    
+    this->_scenePrimitives.clear();
   }
 }; // Scene
 
