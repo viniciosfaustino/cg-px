@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{6a7a58f4-91fd-482b-8cd6-b2d9613c2fc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Main.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RayTracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BVH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,5 +100,28 @@
     <ClInclude Include="..\..\RayTracer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\BVH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\shaders\gouraud.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\gouraud.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\p4.fs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\p4.vs">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\phong.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\assets\shaders\phong.vert">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

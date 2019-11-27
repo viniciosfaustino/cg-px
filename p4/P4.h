@@ -2,6 +2,8 @@
 #define __P4_h
 
 #include "Assets.h"
+#include "BVH.h"
+
 #include "GLRenderer.h"
 #include "Light.h"
 #include "Primitive.h"
@@ -119,15 +121,16 @@ private:
     directional
   };
 
+  using BVHRef = Reference<BVH>;
+  using BVHMap = std::map<TriangleMesh*, BVHRef>;
+
+
   GLSL::Program _programG, _programP;
   Reference<Scene> _scene;
   Reference<SceneEditor> _editor;
-  Reference<GLRenderer> _renderer;
-  // **Begin temporary attributes
-  // Those are just to show some geometry
-  // They should be replaced by your scene hierarchy
+  Reference<GLRenderer> _renderer;  
   std::vector<Reference<SceneObject>> _objects;
-  // **End temporary attributes
+ 
   SceneNode* _current{};
   Color _selectedWireframeColor{ 255, 102, 0 };
   Flags<MoveBits> _moveFlags{};
@@ -141,6 +144,8 @@ private:
   ViewMode _viewMode{ ViewMode::Editor };
   Reference<RayTracer> _rayTracer;
   Reference<GLImage> _image;
+  BVHMap bvhMap;
+
 
   static MeshMap _defaultMeshes;
 

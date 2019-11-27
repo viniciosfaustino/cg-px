@@ -35,7 +35,6 @@ uniform int flatMode; //ok
 //layout(location = 1) in vec3 normal;
 in vec4 P;
 in vec3 N;
-in vec4 vertexColor;
 out vec4 fragmentColor;
 
 

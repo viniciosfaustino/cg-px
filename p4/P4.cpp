@@ -1195,6 +1195,8 @@ drawMesh(GLMesh* mesh, GLuint mode)
 inline void
 P4::drawPrimitive(Primitive& primitive)
 {
+  auto mesh = primitive.mesh();
+
   auto m = glMesh(primitive.mesh());
 
   if (nullptr == m)
@@ -1217,11 +1219,27 @@ P4::drawPrimitive(Primitive& primitive)
 
   m->bind();
   drawMesh(m, GL_FILL);
+
+  // **Begin BVH test
+  auto bvh = bvhMap[mesh];
+
+  if (bvh == nullptr)
+    bvhMap[mesh] = bvh = new BVH{ *mesh, 16 };
+  // **End BVH test
+
+
   if (primitive.sceneObject() != _current)
     return;
   _programG.setUniformVec4("material.diffuse", _selectedWireframeColor);
   _programG.setUniform("flatMode", (int)1);
   drawMesh(m, GL_LINE);
+
+  bvh->iterate([this, t](const BVHNodeInfo& node)
+    {
+      _editor->setLineColor(node.isLeaf ? Color::yellow : Color::magenta);
+      _editor->drawBounds(node.bounds, t->localToWorldMatrix());
+    });
+
 }
 
 inline void

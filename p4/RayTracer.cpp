@@ -213,6 +213,7 @@ RayTracer::intersect(const Ray& ray, Intersection& hit)
     {
       if (p->intersect(ray, distance))
       {
+        _numberOfHits++;
         if (distance < hit.distance)
         {
           hit.distance = distance;
