@@ -239,7 +239,6 @@ namespace cg
   {
     // TODO: insert your code here
 
-    Color I;
     auto triangles = hit.object->mesh()->data().triangles;
     auto normals = hit.object->mesh()->data().vertexNormals;
 
@@ -257,6 +256,8 @@ namespace cg
 
     auto it = _scene->getSceneLightsIterator();
     auto end = _scene->getSceneLightsEnd();
+    auto material = hit.object->sceneObject()->primitive()->material;
+    Color I = Color::black;
     for (; it != end; it++)
     {
       auto l = it->get();
@@ -271,10 +272,9 @@ namespace cg
       float dl;
       float gammaL;
       float phiL;
-      auto material = hit.object->sceneObject()->primitive()->material;
-      I = material.ambient * _scene->ambientLight;
       if (!shadow(ray))
       {
+        I += material.ambient * _scene->ambientLight;
         switch (l->type())
         {
         case (0):// directional
@@ -282,7 +282,7 @@ namespace cg
           Ll = -lDirection.versor();
           break;
         case(1):// point
-          Ll = lDirection - p;
+          Ll = (lDirection - p).versor();
           dl = (p - lPos).length();
           Il = l->color * (1.0f / (pow(dl, l->fl())));
           break;
@@ -296,8 +296,8 @@ namespace cg
         }
         auto OdIl = material.diffuse * Il;
         auto OsIl = material.spot * Il;
-        auto Rl = Ll - 2.0f * N.dot(Ll) * N;
-        I += OdIl * N.dot(Ll) + OsIl * pow(max(-Rl.dot(V), 0.0f), material.shine);
+        auto Rl = Ll - 2 * N.dot(Ll) * N;
+        I += OdIl * N.dot(Ll) + OsIl * pow(max(Rl.dot(V), 0.0f), material.shine);
 
       }
     }

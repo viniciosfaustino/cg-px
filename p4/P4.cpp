@@ -69,21 +69,52 @@ P4::buildScene()
   auto o = new SceneObject{ "Main Camera", _scene };
 
   auto camera = new Camera;
+  camera->setViewAngle(60);
+  camera->setClippingPlanes(0.01, 1000);
+  o->setParent(_scene->root());
   o->setCamera(camera);
+  o->transform()->setLocalPosition(vec3f(0, 4.8, 3.7));
+  o->transform()->rotate(vec3f(-50, 0, 0));
 
   o->addComponent(camera);
-  o->setParent(_scene->root());
+
   _objects.push_back(o);
   _scene->root()->addChild(o);
   Camera::setCurrent(camera);
 
-  Reference<SceneObject> _box = new SceneObject{ "Box1", _scene };
-  int rootLevel = 3;
-  int subLevel = 2;
-  for (int i = 0; i < rootLevel; i++)
-  {
-    createNewObject(P4::SceneObjectType::shape, "Box");
-  }
+  o = new SceneObject{ "box1", _scene };
+
+  auto p1 = makePrimitive(_defaultMeshes.find("Box"));
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(0.4, 0.3, 0.4));
+  o->transform()->setLocalPosition(vec3f(0, 2.3, 0));
+  _scene->root()->addChild(o);
+
+
+  o = new SceneObject{ "box2", _scene };
+  p1 = makePrimitive(_defaultMeshes.find("Box"));
+  o->setParent(_scene->root());
+  o->addComponent(p1);  
+  _scene->root()->addChild(o);
+
+  auto l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light0", _scene };
+  l->color = Color::red;
+  l->setGammaL(10);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(1, 10, 0));
+  _scene->root()->addChild(o);
+
+  l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light1", _scene };
+  l->color = Color::green;
+  l->setGammaL(10);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(-1, 10, 0));
+  _scene->root()->addChild(o);
 }
 
 inline void
