@@ -254,9 +254,13 @@ namespace cg
     auto p = ray.origin + hit.distance * ray.direction;
     p += rt_eps() * N;
 
+    auto material = hit.object->sceneObject()->primitive()->material;
+    auto Or = material.specular;
+    auto w = weight * std::max({ Or.r, Or.g, Or.b });
+    
     auto it = _scene->getSceneLightsIterator();
     auto end = _scene->getSceneLightsEnd();
-    auto material = hit.object->sceneObject()->primitive()->material;
+
     Color I = Color::black;
     for (; it != end; it++)
     {
@@ -302,7 +306,18 @@ namespace cg
 
       }
     }
-
+    auto Rf = ray.direction - 2 * N.dot(ray.direction) * N;
+    if (Or != Color::black)
+    {
+      if (w > _minWeight)
+      {
+        auto tr = trace({ p,Rf }, level + 1, w);
+        if (tr != background())
+        {
+          I += Or * tr;
+        }
+      }
+    }
 
     return I;
   }

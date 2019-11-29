@@ -152,6 +152,7 @@ private:
   static MeshMap _defaultMeshes;
 
   void buildScene();
+  void buildScene1();
   void buildScene2();
   void renderScene();
 

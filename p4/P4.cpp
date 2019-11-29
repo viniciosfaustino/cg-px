@@ -132,18 +132,34 @@ setObj(Reference<SceneObject> o, vec3f localPos, vec3f localScale, vec3f rotate,
   o->transform()->setLocalPosition(localPos);
   o->transform()->rotate(rotate);
 }
-inline void
-setCam(Reference<Camera>cam, Reference<SceneObject>o, float f, float b)
-{
 
+inline void
+P4::buildScene1()
+{
+  buildScene();
+  _renderer = new GLRenderer{ *_scene };
+  _rayTracer = new RayTracer{ *_scene };
+  _renderer->setProgram(&_programP);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_POLYGON_OFFSET_FILL);
+  glPolygonOffset(1.0f, 1.0f);
+  glEnable(GL_LINE_SMOOTH);
+  _programG.use();
 }
 
 inline void
 P4::buildScene2()
 {  
-  _current = _scene = new Scene{ "Scene 1" };
-  _editor = new SceneEditor{ *_scene };
-  _editor->setDefaultView((float)width() / (float)height());
+  _current = _scene = new Scene{ "Scene 2" };
+  
+  _renderer = new GLRenderer{ *_scene };
+  _rayTracer = new RayTracer{ *_scene };
+  _renderer->setProgram(&_programP);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_POLYGON_OFFSET_FILL);
+  glPolygonOffset(1.0f, 1.0f);
+  glEnable(GL_LINE_SMOOTH);
+  _programG.use();  
 
   auto o = new SceneObject{ "Main Camera", _scene };
 
@@ -368,7 +384,7 @@ P4::initialize()
   Application::loadShaders(_programP, "shaders/phong.vert", "shaders/phong.frag");
   Assets::initialize();
   buildDefaultMeshes();
-  buildScene2();
+  buildScene();
   _renderer = new GLRenderer{ *_scene };
   _rayTracer = new RayTracer{ *_scene };
   _renderer->setProgram(&_programP);
@@ -1219,13 +1235,11 @@ P4::mainMenu()
     if (ImGui::BeginMenu("Examples"))
     {
       if (ImGui::MenuItem("Scene 1"))
-      {
-        _scene->clearScene();
-        buildScene();
+      {       
+        buildScene1();
       }
       if (ImGui::MenuItem("Scene 2"))
-      {
-        _scene->clearScene();
+      {        
         buildScene2();
       }
       ImGui::EndMenu();

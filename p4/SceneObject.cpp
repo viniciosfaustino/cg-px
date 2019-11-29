@@ -102,11 +102,11 @@ namespace cg
   {
     if (_parent != nullptr)
     {
-      _parent->removeChild(this);
       if (parent != nullptr)
       {
         parent->_children.push_back(this);
       }
+      _parent->removeChild(this);
     }
 
     if (parent == nullptr)
