@@ -31,6 +31,10 @@
 // Last revision: 18/11/2019
 
 #include "BVH.h"
+#include <stack>
+#include "Primitive.h"
+#include "Transform.h"
+#include "SceneObject.h"
 
 namespace cg
 { // begin namespace cg
@@ -236,10 +240,166 @@ BVH::iterate(BVHNodeFunction f) const
   Node::iterate(_root, f);
 }
 
+
+bool
+BVH::intersectTriangles(const Ray& ray, Node* no, Intersection& hit)
+{
+	if (_mesh == nullptr)
+		return false;
+
+	auto t = (hit.object->sceneObject())->transform();
+	auto origin = t->worldToLocalMatrix().transform(ray.origin);
+	auto D = t->worldToLocalMatrix().transformVector(ray.direction);
+	Ray localRay{ origin, D };
+	auto d = math::inverse(D.length());
+	float tMin;
+	float tMax;
+
+	float localMin = math::Limits<float>::inf();
+
+	
+	auto triangles = _mesh->data().triangles;
+	auto numTriangles = _mesh->data().numberOfTriangles;
+	auto vertexArray = _mesh->data().vertices;
+	for (int i = no->first; i < no->first + no->count; i++)
+	{
+		auto p0 = vertexArray[triangles[_triangles[i]].v[0]];
+		auto p1 = vertexArray[triangles[_triangles[i]].v[1]];
+		auto p2 = vertexArray[triangles[_triangles[i]].v[2]];
+
+		auto e1 = p1 - p0;// #1
+		auto e2 = p2 - p0;// #2
+		auto s1 = D.cross(e2);// #3
+		auto s1e1 = s1.dot(e1);
+		auto invd = 1 / s1e1;
+		if (math::isZero(abs(invd)))// #4
+		{
+			continue; //5
+		}
+		auto s = origin - p0; // #6
+		auto s2 = s.cross(e1);// #7
+		auto t = s2.dot(e2) * invd;// #8
+		if (t < 0)
+		{
+			continue;
+		}
+
+		auto b1 = s1.dot(s) * invd;// #9
+		if (b1 < 0)
+		{
+			continue;
+		}
+
+		auto b2 = s2.dot(D) * invd;// #10
+		if (b2 < 0)
+		{
+			continue;
+		}
+
+		if (b1 + b2 > 1)
+		{
+			continue;
+		}
+		auto td = t * d;
+		if (td > localMin) continue;
+		hit.triangleIndex = i;
+		hit.distance = localMin = td;
+		hit.p = vec3f{ 1 - b1 - b2, b1, b2 };
+	}
+	return localMin != math::Limits<float>::inf();
+}
+
 bool
 BVH::intersect(const Ray& ray, Intersection& hit) const
 {
-  // TODO
+	std::stack<Node*> pilha;
+
+	float min, max;
+
+	pilha.push(_root);
+
+	while(!pilha.empty())
+	{
+		Node* no = pilha.top();
+		pilha.pop();
+
+		if (no->bounds.intersect(ray, min, max))
+		{
+			if (!no->isLeaf()) {
+				pilha.push(no->children[0]);
+				pilha.push(no->children[1]);
+			}
+			else
+			{
+				if (_mesh == nullptr)
+					return false;
+
+				auto t = (hit.object->sceneObject())->transform();
+				auto origin = t->worldToLocalMatrix().transform(ray.origin);
+				auto D = t->worldToLocalMatrix().transformVector(ray.direction);
+				Ray localRay{ origin, D };
+				auto d = math::inverse(D.length());
+				float tMin;
+				float tMax;
+
+				float localMin = math::Limits<float>::inf();
+
+
+				auto triangles = _mesh->data().triangles;
+				auto numTriangles = _mesh->data().numberOfTriangles;
+				auto vertexArray = _mesh->data().vertices;
+				for (int i = no->first; i < no->first + no->count; i++)
+				{
+					auto p0 = vertexArray[triangles[_triangles[i]].v[0]];
+					auto p1 = vertexArray[triangles[_triangles[i]].v[1]];
+					auto p2 = vertexArray[triangles[_triangles[i]].v[2]];
+
+					auto e1 = p1 - p0;// #1
+					auto e2 = p2 - p0;// #2
+					auto s1 = D.cross(e2);// #3
+					auto s1e1 = s1.dot(e1);
+					auto invd = 1 / s1e1;
+					if (math::isZero(abs(invd)))// #4
+					{
+						continue; //5
+					}
+					auto s = origin - p0; // #6
+					auto s2 = s.cross(e1);// #7
+					auto t = s2.dot(e2) * invd;// #8
+					if (t < 0)
+					{
+						continue;
+					}
+
+					auto b1 = s1.dot(s) * invd;// #9
+					if (b1 < 0)
+					{
+						continue;
+					}
+
+					auto b2 = s2.dot(D) * invd;// #10
+					if (b2 < 0)
+					{
+						continue;
+					}
+
+					if (b1 + b2 > 1)
+					{
+						continue;
+					}
+					auto td = t * d;
+					if (td > localMin) continue;
+					hit.triangleIndex = i;
+					hit.distance = localMin = td;
+					hit.p = vec3f{ 1 - b1 - b2, b1, b2 };
+				}
+				return localMin != math::Limits<float>::inf();
+
+			}
+		}
+	
+	}
+
   return false;
 }
 

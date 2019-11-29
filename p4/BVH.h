@@ -69,8 +69,10 @@ public:
 
   bool intersect(const Ray& ray, Intersection& hit) const;
 
+
 private:
   struct Node;
+
 
   using TriangleIndexArray = std::vector<int>;
 
@@ -94,6 +96,7 @@ private:
     int end,
     TriangleIndexArray&);
 
+  bool intersectTriangles(const Ray& ray, Node* no, Intersection& hit);
 }; // BVH
 
 } // end namespace cg

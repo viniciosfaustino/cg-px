@@ -1296,11 +1296,13 @@ P4::drawPrimitive(Primitive& primitive)
   drawMesh(m, GL_FILL);
 
   //// **Begin BVH test
-  //auto bvh = bvhMap[mesh];
+  auto bvh = bvhMap[mesh];
 
-  //if (bvh == nullptr)
-  //  bvhMap[mesh] = bvh = new BVH{ *mesh, 16 };
-  //// **End BVH test
+  if (bvh == nullptr)
+    bvhMap[mesh] = bvh = new BVH{ *mesh, 16 };
+
+  primitive.setbvh(bvh);
+  // **End BVH test
 
 
   if (primitive.sceneObject() != _current)
@@ -1314,7 +1316,7 @@ P4::drawPrimitive(Primitive& primitive)
       _editor->setLineColor(node.isLeaf ? Color::yellow : Color::magenta);
       _editor->drawBounds(node.bounds, t->localToWorldMatrix());
     });*/
-
+  
 
 }
 
