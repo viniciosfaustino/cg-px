@@ -67,7 +67,7 @@ public:
   Bounds3f bounds() const;
   void iterate(BVHNodeFunction f) const;
 
-  bool intersect(const Ray& ray, Intersection& hit) const;
+  bool intersect(const Ray& ray, Intersection& hit, float d) const;
 
 
 private:
@@ -95,8 +95,7 @@ private:
     int start,
     int end,
     TriangleIndexArray&);
-
-  bool intersectTriangles(const Ray& ray, Node* no, Intersection& hit);
+  
 }; // BVH
 
 } // end namespace cg

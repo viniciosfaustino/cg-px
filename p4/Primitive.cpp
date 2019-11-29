@@ -47,7 +47,7 @@ namespace cg
     auto t = const_cast<Primitive*>(this)->transform();
     auto origin = t->worldToLocalMatrix().transform(ray.origin);
     auto D = t->worldToLocalMatrix().transformVector(ray.direction);
-    auto d = math::inverse(D.length()); // ||s||
+    auto d = math::inverse(D.length());
     Ray localRay{ origin, D };
     float tMin;
     float tMax;
@@ -58,29 +58,28 @@ namespace cg
       auto triangles = _mesh->data().triangles;
       auto numTriangles = _mesh->data().numberOfTriangles;
       auto vertexArray = _mesh->data().vertices;
-      // mesh data
-      //auto& data = _mesh->data();
+      
       auto distance = math::Limits<float>::inf();
-      auto intersect = false;
+      bool intersect = false;
       for (int i = 0; i < numTriangles; ++i)
       {
         auto p0 = vertexArray[triangles[i].v[0]];
         auto p1 = vertexArray[triangles[i].v[1]];
         auto p2 = vertexArray[triangles[i].v[2]];
 
-        vec3f e1{ p1 - p0 };
-        vec3f e2{ p2 - p0 };
-        vec3f s1{ vec3f::cross(localRay.direction, e2) };
+        vec3f e1 = p1 - p0;// #1
+        vec3f e2 = p2 - p0;// #2
+        vec3f s1 =  localRay.direction.cross(e2);// #3
 
-        auto s1_e1 = vec3f::dot(s1, e1);
-
-        // se s1 * e1
-        if (math::isZero(s1_e1)) continue;
+        auto s1_e1 = s1.dot(e1);
+        
+        if (math::isZero(abs(s1_e1))) continue; //#4
 
         auto invD = math::inverse(s1_e1);
+        if (math::isZero(abs(invD))) continue; //#5
 
-        vec3f s{ localRay.origin - p0 };
-        vec3f s2{ vec3f::cross(s, e1) };
+        vec3f s =  localRay.origin - p0 ;
+        vec3f s2 = s.cross(e1);
 
         auto t = s2.dot(e2) * invD;
         if (!isgreaterequal(t, 0.0f)) continue;
@@ -93,15 +92,12 @@ namespace cg
         if (!isgreaterequal(b2, 0.0f)) continue;
 
         if (b1 + b2 <= 1.0f)
-        {
-          // calcular info da intersecao
-          // t = t_l / |s|
+        {          
           hit.distance = distance;
           hit.triangleIndex = i;
           hit.object = this;
-          // coord baricentricas
           hit.p = vec3f{ 1 - b1 - b2, b1, b2 };
-          intersect = true; // making sure it intersected
+          intersect = true; 
         }
       }
       return intersect;
