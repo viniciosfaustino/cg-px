@@ -263,7 +263,7 @@ namespace cg
       auto l = it->get();
       vec3f lPos = l->sceneObject()->transform()->position();
       auto lDirection = l->sceneObject()->transform()->rotation() * vec3f(0, -1, 0);
-      auto ray = Ray{ p,lPos - p, 0, (lPos-p).length() };      
+      auto ray = l->type() == Light::Type::Directional ? Ray{ p,-lDirection} : Ray{ p,lPos - p, 0, (lPos-p).length() };
       auto camPos = Camera::current()->transform()->position();
       auto V = (camPos - p).versor();
 
@@ -272,6 +272,7 @@ namespace cg
       float dl;
       float gammaL;
       float phiL;
+      
       if (!shadow(ray))
       {
         I += material.ambient * _scene->ambientLight;

@@ -115,6 +115,14 @@ P4::buildScene()
   o->addComponent(l);
   o->transform()->setLocalPosition(vec3f(-1, 10, 0));
   _scene->root()->addChild(o);
+
+  l = createLight(cg::Light::Type::Directional);
+  o = new SceneObject{ "light2", _scene };
+  l->color = Color::blue;  
+  o->setParent(_scene->root());
+  o->addComponent(l);  
+  o->transform()->rotate(vec3f(90, 0, 0));
+  _scene->root()->addChild(o);
 }
 
 inline void
@@ -360,7 +368,7 @@ P4::initialize()
   Application::loadShaders(_programP, "shaders/phong.vert", "shaders/phong.frag");
   Assets::initialize();
   buildDefaultMeshes();
-  buildScene();
+  buildScene2();
   _renderer = new GLRenderer{ *_scene };
   _rayTracer = new RayTracer{ *_scene };
   _renderer->setProgram(&_programP);
