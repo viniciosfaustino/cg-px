@@ -188,7 +188,7 @@ namespace cg
   inline constexpr auto
     rt_eps()
   {
-    return 1e-4f;
+    return 1e-2f;
   }
 
   bool
