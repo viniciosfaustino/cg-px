@@ -206,24 +206,30 @@ namespace cg
     auto scene = this->scene();
     auto it = scene->getScenePrimitiveIterator();
     auto end = scene->getScenePrimitiveEnd();
+    bool found = false;
     for (; it != end; it++)
     {
       auto component = it->get();
       if (auto p = dynamic_cast<Primitive*>(component))
       {
-        if (p->intersect(ray, hit))
+        if (found == false)
+        {
+          hit.object = p;
+        }
+        if (p->getbvh()->intersect(ray, hit))
         {
           _numberOfHits++;
           if (distance > hit.distance)
           {
             distance = hit.distance;
-            hit.object = p;
+            hit.object = p;            
           }
+          found = true;
         }
       }
     }
     // TODO: insert your code here
-    return hit.object != nullptr;
+    return found;
   }
 
   Color

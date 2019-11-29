@@ -389,7 +389,7 @@ BVH::intersect(const Ray& ray, Intersection& hit) const
 					}
 					auto td = t * d;
 					if (td > localMin) continue;
-					hit.triangleIndex = i;
+					hit.triangleIndex = _triangles[i];
 					hit.distance = localMin = td;
 					hit.p = vec3f{ 1 - b1 - b2, b1, b2 };
 				}
