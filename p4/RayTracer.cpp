@@ -33,6 +33,7 @@
 #include "Camera.h"
 #include "RayTracer.h"
 #include <time.h>
+#include "Primitive.h"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ namespace cg
   // =========
   RayTracer::RayTracer(Scene& scene, Camera* camera) :
     Renderer{ scene, camera },
-    _maxRecursionLevel{ 6 },
+    _maxRecursionLevel{ 10 },
     _minWeight{ MIN_WEIGHT }
   {
     // TODO: BVH
@@ -188,8 +189,54 @@ namespace cg
   inline constexpr auto
     rt_eps()
   {
-    return 1e-2f;
+    return 1e-5f;
   }
+
+  //bool
+  //  RayTracer::intersect(const Ray& ray, Intersection& hit)
+  //  //[]---------------------------------------------------[]
+  //  //|  Ray/object intersection                            |
+  //  //|  @param the ray (input)                             |
+  //  //|  @param information on intersection (output)        |
+  //  //|  @return true if the ray intersects an object       |
+  //  //[]---------------------------------------------------[]
+  //{
+  //  hit.object = nullptr;
+  //  hit.distance = ray.tMax;
+  //  float distance = ray.tMax;
+  //  auto scene = this->scene();
+  //  auto it = scene->getScenePrimitiveIterator();
+  //  auto end = scene->getScenePrimitiveEnd();
+  //
+  //  for (; it != end; it++)
+  //  {
+  //    auto component = it->get();
+  //    if (auto p = dynamic_cast<Primitive*>(component))
+  //    {
+  //      auto t = (p->sceneObject())->transform();
+  //      auto origin = t->worldToLocalMatrix().transform(ray.origin);
+  //      auto D = t->worldToLocalMatrix().transformVector(ray.direction);
+  //      Ray localRay{ origin, D , ray.tMin, ray.tMax};
+  //      origin = localRay.origin;
+  //      D = localRay.direction;
+  //      auto d = math::inverse(D.length());
+  //      float tMin;
+  //      float tMax;
+
+  //      
+  //      if (p->getbvh()->intersect(localRay, hit, d))
+  //      {
+  //        _numberOfHits++;
+  //        if (distance > hit.distance)
+  //        {
+  //          distance = hit.distance;
+  //          hit.object = p;
+  //        }          
+  //      }
+  //    }
+  //  }    
+  //  return hit.object != nullptr;
+  //}
 
   bool
     RayTracer::intersect(const Ray& ray, Intersection& hit)
@@ -202,38 +249,32 @@ namespace cg
   {
     hit.object = nullptr;
     hit.distance = ray.tMax;
-    float distance = ray.tMax;
-    auto scene = this->scene();
-    auto it = scene->getScenePrimitiveIterator();
-    auto end = scene->getScenePrimitiveEnd();
-  
+    // TODO: insert your code here
+    float minDistance = math::Limits<float>::inf();
+
+    auto it = _scene->getScenePrimitiveIterator();
+    auto end = _scene->getScenePrimitiveEnd();
+
     for (; it != end; it++)
     {
-      auto component = it->get();
-      if (auto p = dynamic_cast<Primitive*>(component))
+      if (auto p = dynamic_cast<Primitive*>((Component*)(*it)))
       {
-        auto t = (p->sceneObject())->transform();
-        auto origin = t->worldToLocalMatrix().transform(ray.origin);
+        auto t = p->transform();
+        auto o = t->worldToLocalMatrix().transform(ray.origin);
         auto D = t->worldToLocalMatrix().transformVector(ray.direction);
-        Ray localRay{ origin, D };
-        origin = localRay.origin;
-        D = localRay.direction;
-        auto d = math::inverse(D.length());
-        float tMin;
-        float tMax;
+        auto d = math::inverse(D.length()); // ||s||
 
-        
-        if (p->getbvh()->intersect(localRay, hit, d))
+        if (p->getbvh()->intersect({ o, D }, hit, d))
         {
           _numberOfHits++;
-          if (distance > hit.distance)
+          if (hit.distance < minDistance)
           {
-            distance = hit.distance;
             hit.object = p;
-          }          
+            minDistance = hit.distance;
+          }
         }
       }
-    }    
+    }
     return hit.object != nullptr;
   }
 
@@ -259,8 +300,10 @@ namespace cg
 
     auto N = hit.p[0] * n0 + hit.p[1] * n1 + hit.p[2] * n2;
 
-    auto normalMatrix = mat3f(hit.object->sceneObject()->transform()->worldToLocalMatrix().transposed());
-    N = normalMatrix.transform(N.versor());
+    auto normalMatrix = mat3f(hit.object->sceneObject()->transform()->worldToLocalMatrix()
+    ).transposed();
+    //N = normalMatrix.transform(N.versor()); sugestão do yago
+    N = normalMatrix * N; //sugestão do yago
     N = N.versor();
     auto p = ray.origin + hit.distance * ray.direction;
     p += rt_eps() * N;
@@ -323,7 +366,7 @@ namespace cg
       if (w > _minWeight)
       {
         auto tr = trace({ p,Rf }, level + 1, w);
-        if (tr != background())
+        if (tr != _scene->backgroundColor)
         {
           I += Or * tr;
         }

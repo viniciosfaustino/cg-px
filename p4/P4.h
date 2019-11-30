@@ -154,6 +154,7 @@ private:
   void buildScene();
   void buildScene1();
   void buildScene2();
+  void buildScene3();
   void renderScene();
 
   void mainMenu();
