@@ -635,6 +635,217 @@ P4::buildScene4()
   _programG.use();
 }
 
+
+
+
+
+
+inline void
+P4::buildScene5()
+{
+	int boxCounter = 0;
+	_current = _scene = new Scene{ "Scene 5" };
+
+	_editor = new SceneEditor{ *_scene };
+	_editor->setDefaultView((float)width() / (float)height());
+
+	auto o = new SceneObject{ "Main Camera", _scene };
+
+	auto camera = new Camera;
+	camera->setViewAngle(60);
+	camera->setClippingPlanes(0.01, 1000);
+	o->setParent(_scene->root());
+	o->setCamera(camera);
+	o->transform()->setLocalPosition(vec3f(0, 0, 6));
+	o->transform()->rotate(vec3f(0, 0, 0));
+
+	o->addComponent(camera);
+
+	_objects.push_back(o);
+	_scene->root()->addChild(o);
+	Camera::setCurrent(camera);
+
+	o = new SceneObject{ "box10", _scene };
+	auto p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(5, 5, 0.1));
+	o->transform()->setLocalPosition(vec3f(0, 0, -5));
+	o->primitive()->material.diffuse = Color::red;
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box11", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(5, 0, 0));
+	o->transform()->setLocalScale(vec3f(0.1, 5, 5));
+
+	o->primitive()->material.diffuse = Color::green;
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box12", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(0.1, 5, 5));
+	o->transform()->setLocalPosition(vec3f(-5, 0, 0));
+	o->primitive()->material.diffuse = Color::blue;
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box18", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(1, 1, 1));
+	o->transform()->setLocalPosition(vec3f(0, 0, -4));
+	o->transform()->rotate(vec3f(45, 45, 45));
+	o->primitive()->material.diffuse.setRGB(255,255,0);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box19", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(5, 0.1, 5));
+	o->transform()->rotate(vec3f(-45, 0, 0));
+	o->transform()->setLocalPosition(vec3f(0, 2.5, -5));
+	o->primitive()->material.diffuse.setRGB(101,0,179);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box20", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(5, 0.1, 5));
+	o->transform()->setLocalPosition(vec3f(0, -2.5, -5));
+	o->transform()->rotate(vec3f(45, 0, 0));
+	o->primitive()->material.diffuse.setRGB(255,255,0);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "box23", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Box"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalScale(vec3f(1, 1, 1));
+	o->transform()->rotate(vec3f(0, 5.3, 0));
+	o->transform()->setLocalPosition(vec3f(0, 0, -4));
+	o->primitive()->material.diffuse.setRGB(12,126,232);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	
+
+
+
+
+	o = new SceneObject{ "ball16", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(4, 0, -4));
+	o->primitive()->material.diffuse.setRGB(97, 0, 253);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball17", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(-4, 0, -4));
+	o->primitive()->material.diffuse.setRGB(21, 195, 77);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball21", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(-4, 0, 0));
+	o->primitive()->material.diffuse.setRGB(255, 255, 0);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball22", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(4, 0, 0));
+	o->primitive()->material.diffuse.setRGB(25, 137, 255);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball24", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(-5, 3, -4));
+	o->primitive()->material.diffuse.setRGB(232, 106, 2);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball25", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(5, 3, -4));
+	o->primitive()->material.diffuse.setRGB(12, 232, 200);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball26", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(5, -3, -4));
+	o->primitive()->material.diffuse.setRGB(212, 0, 255);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	o = new SceneObject{ "ball27", _scene };
+	p1 = makePrimitive(_defaultMeshes.find("Sphere"));
+	o->setParent(_scene->root());
+	o->addComponent(p1);
+	o->transform()->setLocalPosition(vec3f(-5, -3, -4));
+	o->primitive()->material.diffuse.setRGB(255, 40, 0);
+	o->primitive()->material.specular = Color::white;
+	_scene->root()->addChild(o);
+
+	
+
+
+
+	auto l = createLight(cg::Light::Type::Point);
+	o = new SceneObject{ "light0", _scene };
+	l->color = Color::white;
+	o->setParent(_scene->root());
+	o->addComponent(l);
+	o->transform()->setLocalPosition(vec3f(0, 0, 0));
+	_scene->root()->addChild(o);
+
+	_renderer = new GLRenderer{ *_scene };
+	_rayTracer = new RayTracer{ *_scene };
+	_renderer->setProgram(&_programP);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
+	glEnable(GL_LINE_SMOOTH);
+	_programG.use();
+}
+
+
+
+
+
+
+
+
 void
 P4::initialize()
 {
@@ -1500,6 +1711,10 @@ P4::mainMenu()
       {
         buildScene2();
       }
+	  if (ImGui::MenuItem("Scene 5"))
+	  {
+		  buildScene5();
+	  }
       if (ImGui::MenuItem("Caixa de Espelhos"))
       {
         buildScene3();
