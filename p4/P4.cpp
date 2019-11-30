@@ -95,7 +95,7 @@ P4::buildScene()
   o = new SceneObject{ "box2", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Box"));
   o->setParent(_scene->root());
-  o->addComponent(p1);  
+  o->addComponent(p1);
   _scene->root()->addChild(o);
 
   auto l = createLight(cg::Light::Type::Spot);
@@ -118,9 +118,9 @@ P4::buildScene()
 
   l = createLight(cg::Light::Type::Directional);
   o = new SceneObject{ "light2", _scene };
-  l->color = Color::blue;  
+  l->color = Color::blue;
   o->setParent(_scene->root());
-  o->addComponent(l);  
+  o->addComponent(l);
   o->transform()->rotate(vec3f(90, 0, 0));
   _scene->root()->addChild(o);
 }
@@ -128,7 +128,7 @@ P4::buildScene()
 inline void
 setObj(Reference<SceneObject> o, vec3f localPos, vec3f localScale, vec3f rotate, Reference<Scene>_scene)
 {
-  o->setParent(_scene->root());  
+  o->setParent(_scene->root());
   o->transform()->setLocalPosition(localPos);
   o->transform()->rotate(rotate);
 }
@@ -149,9 +149,9 @@ P4::buildScene1()
 
 inline void
 P4::buildScene2()
-{  
+{
   _current = _scene = new Scene{ "Scene 2" };
-  
+
   _renderer = new GLRenderer{ *_scene };
   _rayTracer = new RayTracer{ *_scene };
   _renderer->setProgram(&_programP);
@@ -159,7 +159,7 @@ P4::buildScene2()
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(1.0f, 1.0f);
   glEnable(GL_LINE_SMOOTH);
-  _programG.use();  
+  _programG.use();
 
   auto o = new SceneObject{ "Main Camera", _scene };
 
@@ -406,8 +406,8 @@ P4::buildScene3()
   o->setParent(_scene->root());
   o->addComponent(p1);
   o->transform()->setLocalScale(vec3f(10, 0.1, 10));
-  o->transform()->setLocalPosition(vec3f(0, -0.2, 0));  
-  o->primitive()->material.diffuse = Color::black;    
+  o->transform()->setLocalPosition(vec3f(0, -0.2, 0));
+  o->primitive()->material.diffuse = Color::gray;
   _scene->root()->addChild(o);
 
 
@@ -457,7 +457,7 @@ P4::buildScene3()
   o->addComponent(p1);
   o->transform()->setLocalScale(vec3f(10, 0.1, 10));
   o->transform()->setLocalPosition(vec3f(0, 10, 0));
-  o->primitive()->material.diffuse = Color::cyan;  
+  o->primitive()->material.diffuse = Color::cyan;
   _scene->root()->addChild(o);
 
 
@@ -467,7 +467,7 @@ P4::buildScene3()
   o = new SceneObject{ "ball1", _scene };
   p1 = makePrimitive(_defaultMeshes.find("Sphere"));
   o->setParent(_scene->root());
-  o->addComponent(p1);  
+  o->addComponent(p1);
   o->transform()->setLocalPosition(vec3f(0, 1, 1));
   o->primitive()->material.diffuse = Color::blue;
   _scene->root()->addChild(o);
@@ -511,7 +511,118 @@ P4::buildScene3()
   l->color = Color::white;
   o->setParent(_scene->root());
   o->addComponent(l);
-  o->transform()->setLocalPosition(vec3f(0, 6.3, 0));  
+  o->transform()->setLocalPosition(vec3f(0, 6.3, 0));
+  _scene->root()->addChild(o);
+
+  _renderer = new GLRenderer{ *_scene };
+  _rayTracer = new RayTracer{ *_scene };
+  _renderer->setProgram(&_programP);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_POLYGON_OFFSET_FILL);
+  glPolygonOffset(1.0f, 1.0f);
+  glEnable(GL_LINE_SMOOTH);
+  _programG.use();
+}
+
+inline void
+P4::buildScene4()
+{
+  int boxCounter = 0;
+  _current = _scene = new Scene{ "Scene 4" };
+
+  _editor = new SceneEditor{ *_scene };
+  _editor->setDefaultView((float)width() / (float)height());
+
+  auto o = new SceneObject{ "Main Camera", _scene };
+
+  auto camera = new Camera;
+  camera->setViewAngle(60);
+  camera->setClippingPlanes(0.01, 1000);
+  o->setParent(_scene->root());
+  o->setCamera(camera);
+  o->transform()->setLocalPosition(vec3f(0, 0, 6));
+  o->transform()->rotate(vec3f(0, 0, 0));
+
+  o->addComponent(camera);
+
+  _objects.push_back(o);
+  _scene->root()->addChild(o);
+  Camera::setCurrent(camera);
+
+  o = new SceneObject{ "wall", _scene };
+
+  auto p1 = makePrimitive(_defaultMeshes.find("Box"));
+  o->setParent(_scene->root());
+  o->addComponent(p1);
+  o->transform()->setLocalScale(vec3f(10, 10, 0.1));
+  o->transform()->setLocalPosition(vec3f(0, 0, -9.7));
+  _scene->root()->addChild(o);
+
+
+  o = new SceneObject{ "skull", _scene };
+  o->setParent(_scene->root());
+  o->transform()->setLocalScale(vec3f(0.1, 0.1, 0.1));
+  o->transform()->rotate(vec3f(-90, 0, 0));
+
+
+  auto& meshes = Assets::meshes();
+  for (auto mit = meshes.begin(); mit != meshes.end(); ++mit)
+  {
+    if (std::strcmp(mit->first.c_str(), "skull.obj") == 0)
+    {
+      Assets::loadMesh(mit);
+      auto p = makePrimitive(mit);
+      o->addComponent(p);
+    }
+  }
+  _scene->root()->addChild(o);
+
+  auto l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light0", _scene };
+  l->color = Color::red;
+  l->setGammaL(28);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(2, -1.7, 4.5));
+  o->transform()->rotate(vec3f(110, 25, 0));
+  _scene->root()->addChild(o);
+
+  l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light1", _scene };
+  l->color = Color::green;
+  l->setGammaL(28);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(-2, -1.7, 4.5));
+  o->transform()->rotate(vec3f(110, -25, 0));
+  _scene->root()->addChild(o);
+
+  l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light2", _scene };
+  l->color = Color::green;
+  l->setGammaL(28);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(-1, 10, 0));
+  _scene->root()->addChild(o);
+
+
+  l = createLight(cg::Light::Type::Directional);
+  o = new SceneObject{ "light3", _scene };
+  l->color = Color::darkGray;
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->rotate(vec3f(90, 0, 0));
+  _scene->root()->addChild(o);
+
+  l = createLight(cg::Light::Type::Spot);
+  o = new SceneObject{ "light4", _scene };
+  l->color = Color::blue;
+  l->setGammaL(10);
+  o->setParent(_scene->root());
+  o->addComponent(l);
+  o->transform()->setLocalPosition(vec3f(0, 5.9, 9.1));
+  o->transform()->rotate(vec3f(61, 0, 0));
   _scene->root()->addChild(o);
 
   _renderer = new GLRenderer{ *_scene };
@@ -1382,16 +1493,20 @@ P4::mainMenu()
     if (ImGui::BeginMenu("Examples"))
     {
       if (ImGui::MenuItem("Scene 1"))
-      {       
+      {
         buildScene1();
       }
       if (ImGui::MenuItem("Scene 2"))
-      {        
+      {
         buildScene2();
       }
       if (ImGui::MenuItem("Caixa de Espelhos"))
       {
         buildScene3();
+      }
+      if (ImGui::MenuItem("Skull"))
+      {
+        buildScene4();
       }
       ImGui::EndMenu();
     }
@@ -1467,7 +1582,7 @@ P4::drawPrimitive(Primitive& primitive)
       _editor->setLineColor(node.isLeaf ? Color::yellow : Color::magenta);
       _editor->drawBounds(node.bounds, t->localToWorldMatrix());
     });*/
-  
+
 
 }
 
@@ -1775,7 +1890,7 @@ P4::render()
   _programG.setUniformVec4("ambientLight", _scene->ambientLight);
   _programG.setUniformVec3("camPos", ec->transform()->position());
   //_programG.setUniformVec3("lightPosition", p);
-  
+
   loadLights();
 
 
