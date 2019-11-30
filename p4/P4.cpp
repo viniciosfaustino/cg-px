@@ -1536,6 +1536,7 @@ drawMesh(GLMesh* mesh, GLuint mode)
 inline void
 P4::drawPrimitive(Primitive& primitive)
 {
+  if (!primitive.sceneObject()->visible) return;
   auto mesh = primitive.mesh();
 
   auto m = glMesh(primitive.mesh());
@@ -1900,6 +1901,7 @@ P4::render()
   for (; it != end; it++)
   {
     auto o = it->get()->sceneObject();
+    if (!o->visible) continue;
     if (auto p = dynamic_cast<Primitive*>(it->get()))
     {
       drawPrimitive(*p);
