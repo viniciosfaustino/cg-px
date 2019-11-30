@@ -254,9 +254,10 @@ namespace cg
 
     auto it = _scene->getScenePrimitiveIterator();
     auto end = _scene->getScenePrimitiveEnd();
-
+    auto obj = it->get()->sceneObject();
     for (; it != end; it++)
-    {
+    {      
+      if (!it->get()->sceneObject()->visible) continue;
       if (auto p = dynamic_cast<Primitive*>((Component*)(*it)))
       {
         auto t = p->transform();
